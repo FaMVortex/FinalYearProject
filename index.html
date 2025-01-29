@@ -1,9 +1,141 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>F1 Data Visualization</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, #ff1e00, #333);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      text-align: center;
+    }
+
+    header {
+      margin-bottom: 30px;
+      padding: 0 20px;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      margin: 0;
+      animation: fadeIn 1.5s ease-in-out;
+    }
+
+    p {
+      font-size: 1.2rem;
+      margin: 10px 0;
+      animation: fadeIn 2s ease-in-out;
+    }
+
+    .options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      margin-top: 20px;
+      justify-content: center;
+      padding: 0 20px;
+      animation: fadeIn 2.5s ease-in-out;
+    }
+
+    a {
+      text-decoration: none;
+      color: white;
+      background: #ff5733;
+      padding: 15px 20px;
+      border-radius: 5px;
+      font-size: 1rem;
+      transition: background 0.3s ease;
+      text-align: center;
+      min-width: 150px;
+    }
+
+    a:hover {
+      background: #ff7849;
+    }
+
+    footer {
+      position: absolute;
+      bottom: 20px;
+      font-size: 0.8rem;
+      color: #ddd;
+      animation: fadeIn 3s ease-in-out;
+      text-align: center;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 2rem;
+      }
+
+      p {
+        font-size: 1rem;
+      }
+
+      a {
+        font-size: 0.9rem;
+        padding: 10px 15px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      h1 {
+        font-size: 1.5rem;
+      }
+
+      p {
+        font-size: 0.9rem;
+      }
+
+      a {
+        font-size: 0.8rem;
+        padding: 8px 10px;
+      }
+
+      .options {
+        gap: 10px;
+      }
+
+      footer {
+        font-size: 0.7rem;
+      }
+    }
+  </style>
+</head>
 <body>
+  <header>
+    <h1>Welcome to F1 Data Visualization</h1>
+    <p>Explore driver standings, race results, and more from Formula 1.</p>
+  </header>
 
-<h1>My First Heading</h1>
-<p>My first paragraph.</p>
+  <main>
+    <div class="options">
+      <a href="race-results.html">Race Results</a>
+      <a href="driver-standings.html">Driver Standings</a>
+      <a href="https://www.youtube.com/watch?v=qEoxJ0QZkZ4">Constructor Standings</a>
+      <a href="compare.html">Constructor Comparison</a>
+    </div>
+  </main>
 
+  <footer>
+    <p>&copy; 2025 F1 Data Visualization. All rights reserved.</p>
+  </footer>
 </body>
 </html>
