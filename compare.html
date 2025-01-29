@@ -6,76 +6,121 @@
     <title>Team Comparison | F1 Data Viz</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
+        /* General Page Styling */
         body {
-        font-family: Arial, sans-serif;
-        margin: 0;
-        padding: 0;
-        background-color: #f5f5f5;
-        text-align: center;
-    }
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #1c1c1c; /* Darker background for contrast */
+            color: white;
+            text-align: center;
+        }
 
-    header {
-        background-color: #d91a2a;
-        color: white;
-        padding: 15px;
-    }
+        /* Header */
+        header {
+            background-color: #d91a2a;
+            color: white;
+            padding: 20px;
+            font-size: 1.5rem;
+            text-transform: uppercase;
+        }
 
-    nav {
-        margin-top: 10px;
-    }
+        nav {
+            margin-top: 10px;
+        }
 
-    nav a {
-        color: white;
-        text-decoration: none;
-        margin: 0 15px;
-        font-weight: bold;
-    }
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin: 0 15px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            transition: 0.3s;
+        }
 
-    .comparison-container {
-        margin: 20px auto;
-        width: 60%;
-        background: white;
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-    }
+        nav a:hover {
+            color: #ffcc00; /* Yellow highlight on hover */
+        }
 
-    form {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
+        /* Comparison Container */
+        .comparison-container {
+            margin: 30px auto;
+            width: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 15px rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
 
-    label, select, button {
-        margin: 10px 0;
-        font-size: 1rem;
-    }
+        h2 {
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+            color: #ffcc00;
+        }
 
-    button {
-        padding: 10px 15px;
-        background-color: #d91a2a;
-        color: white;
-        border: none;
-        cursor: pointer;
-        font-size: 1rem;
-    }
+        /* Form Styling */
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
 
-    button:hover {
-        background-color: #b71822;
-    }
+        label {
+            margin: 10px 0 5px;
+            font-size: 1.2rem;
+        }
 
-    .chart-container {
-        margin-top: 30px;
-        width: 80%;
-        max-width: 800px;
-        margin-left: auto;
-        margin-right: auto;
-    }
+        select {
+            width: 80%;
+            padding: 10px;
+            font-size: 1rem;
+            border: 2px solid #ffcc00;
+            border-radius: 5px;
+            background: #fff;
+            color: black;
+            outline: none;
+            transition: 0.3s;
+        }
 
-    canvas {
-        background: white;
-        border-radius: 8px;
-    }
+        select:hover {
+            border-color: #d91a2a;
+        }
+
+        button {
+            margin-top: 15px;
+            padding: 12px 20px;
+            background-color: #d91a2a;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 1.2rem;
+            border-radius: 5px;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background-color: #b71822;
+            transform: scale(1.05);
+        }
+
+        /* Chart Container */
+        .chart-container {
+            margin-top: 40px;
+            width: 90%;
+            max-width: 1000px;
+            margin-left: auto;
+            margin-right: auto;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 15px rgba(255, 255, 255, 0.1);
+        }
+
+        canvas {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+        }
     </style>
 </head>
 <body>
@@ -89,7 +134,7 @@
 
     <main>
         <section class="comparison-container">
-            <h2>Select Two Teams and a Season</h2>
+            <h2>🔎 Select Two Teams and a Season</h2>
             <form id="teamSelectionForm">
                 <label for="season">Season:</label>
                 <select id="season"></select>
@@ -100,7 +145,7 @@
                 <label for="team2">Team 2:</label>
                 <select id="team2"></select>
 
-                <button type="submit">Compare</button>
+                <button type="submit">Compare Teams</button>
             </form>
         </section>
 
