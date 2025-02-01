@@ -104,22 +104,76 @@ document.addEventListener("DOMContentLoaded", () => {
     // Render chart with legend-based toggling
     function renderChart(labels, datasets) {
         const ctx = document.getElementById("teamComparisonChart").getContext("2d");
-
+    
         if (chartInstance) {
             chartInstance.destroy();
         }
-
+    
         chartInstance = new Chart(ctx, {
             type: "line",
             data: { labels, datasets },
             options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                elements: {
+                    line: {
+                        tension: 0.3, // Smooth curves
+                        borderWidth: 2, // Ensure lines are clearly visible
+                    },
+                    point: {
+                        radius: 3, // Make points visible
+                    }
+                },
                 plugins: {
                     legend: {
                         display: true,
+                        labels: {
+                            color: "white",
+                        },
                         onClick: (e, legendItem) => {
                             const index = legendItem.datasetIndex;
                             chartInstance.data.datasets[index].hidden = !chartInstance.data.datasets[index].hidden;
                             chartInstance.update();
+                        }
+                    },
+                    zoom: {
+                        pan: {
+                            enabled: true,
+                            mode: "x", // Enable horizontal panning
+                        },
+                        zoom: {
+                            wheel: {
+                                enabled: true, // Enable zooming with the mouse wheel
+                                speed: 0.1, // Slow zoom for better control
+                            },
+                            pinch: {
+                                enabled: true, // Enable pinch zooming on touch devices
+                            },
+                            mode: "x", // Zoom only along the x-axis
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: "Rounds",
+                            color: "white",
+                        },
+                        ticks: {
+                            color: "white",
+                            autoSkip: true,
+                            maxTicksLimit: 20,
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: "Cumulative Points",
+                            color: "white",
+                        },
+                        ticks: {
+                            color: "white",
                         }
                     }
                 }

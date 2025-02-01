@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Team Comparison | F1 Data Viz</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom"></script>
     <style>
         /* General Page Styling */
         body {
@@ -84,8 +85,9 @@
         /* Chart Container */
         .chart-container {
             margin-top: 20px;
-            width: 90%;
-            max-width: 1000px;
+            width: 95%; /* Increase width */
+            max-width: 1200px; /* Allow for a larger chart */
+            height: 500px; /* Increase height for better spacing */
             margin-left: auto;
             margin-right: auto;
             background: rgba(255, 255, 255, 0.1);
@@ -95,8 +97,51 @@
         }
 
         canvas {
+            width: 100% !important;
+            height: 100% !important;
             background: rgba(255, 255, 255, 0.1);
             border-radius: 8px;
+        }
+
+        /* User Guide Section */
+        .guide-container {
+            width: 80%;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            text-align: left;
+            color: white;
+        }
+
+        .guide-container h2 {
+            color: #ffcc00;
+            font-size: 1.4rem;
+        }
+
+        .guide-container p {
+            font-size: 1rem;
+        }
+
+        .guide-container ul {
+            list-style-type: none;
+        padding: 0;
+        }
+
+        .guide-container li {
+            margin: 5px 0;
+            font-size: 1rem;
+        }
+
+        /* Footer */
+        footer {
+            margin-top: 30px;
+            padding: 15px;
+            background: #333;
+            color: white;
+            text-align: center;
+            font-size: 0.9rem;
         }
     </style>
 </head>
@@ -104,19 +149,30 @@
     <header>
         <h1>Compare F1 Teams' Points</h1>
         <nav>
-            <a href="index.html">🏠 Home</a>
-            <a href="compare.html">🏎 Compare Teams</a>
+            <a href="index.html">Home</a>
+            <a href="compare.html">Compare Teams</a>
         </nav>
     </header>
 
     <main>
         <section class="selection-container">
-            <h2>🔎 Select a Season</h2>
-            <label for="season">📅 Season:</label>
+            <h2>Select a Season</h2>
+            <label for="season">Season:</label>
             <select id="season"></select>
         </section>
 
-        <p id="loadingMessage">🔄 Loading chart data...</p>
+        <section class="guide-container">
+            <h2>How to Use This Page</h2>
+            <p>Select a season from the dropdown to load team performance data.</p>
+            <ul>
+                <li><strong>Zoom:</strong> Use the mouse wheel or pinch to zoom in/out.</li>
+                <li><strong>Pan:</strong> Click and drag left or right to move across the chart.</li>
+                <li><strong>Toggle Teams:</strong> Click on a team name in the legend to show/hide its data.</li>
+                <li><strong>Reset View:</strong> Refresh the page to reset zoom and pan.</li>
+            </ul>
+        </section>
+
+        <p id="loadingMessage">Loading chart data...</p>
 
         <section class="chart-container">
             <canvas id="teamComparisonChart"></canvas>
@@ -124,5 +180,9 @@
     </main>
 
     <script src="compare.js"></script>
+
+    <footer>
+        <p>© 2025 F1 Data Visualization | Built by Nathan Matthews</p>
+    </footer>
 </body>
 </html>
