@@ -13,14 +13,13 @@ document.addEventListener("DOMContentLoaded", () => {
         popup.style.display = "none";
     });
 
-    // Fetch available seasons (starting from 1958)
+    // Fetch available seasons
     async function loadSeasons() {
         try {
-            const response = await fetch("https://ergast.com/api/f1/seasons.json?limit=100");
+            const response = await fetch("/api/f1/seasons.json");
             const data = await response.json();
             const seasons = data.MRData.SeasonTable.Seasons
                 .map(season => season.season)
-                .filter(season => parseInt(season) >= 1958)
                 .reverse();
 
             seasons.forEach(season => {
@@ -42,7 +41,7 @@ document.addEventListener("DOMContentLoaded", () => {
         showLoadingMessage(true);
 
         try {
-            const response = await fetch(`https://ergast.com/api/f1/${season}/drivers.json`);
+            const response = await fetch(`/api/f1/${season}/drivers.json`);
             const data = await response.json();
             allDrivers = data.MRData.DriverTable.Drivers.map(driver => ({
                 name: `${driver.givenName} ${driver.familyName}`,
@@ -57,66 +56,145 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Fetch round-by-round points for each driver
     async function fetchAllDriverPoints(season) {
+        console.log(`Fetching driver standings for season ${season}`);
         let driverPoints = {};
         let totalRounds = 0;
-
+    
         try {
-            const response = await fetch(`https://ergast.com/api/f1/${season}.json`);
+            const response = await fetch(`/api/f1/${season}.json`);
             const data = await response.json();
             totalRounds = data.MRData.RaceTable.Races.length;
             allRounds = Array.from({ length: totalRounds }, (_, i) => `Round ${i + 1}`);
-
-            // Initialize driver points structure
+    
+            // Initialize driver points storage correctly
             allDrivers.forEach(driver => {
                 driverPoints[driver.id] = new Array(totalRounds).fill(0);
             });
-
-            // Fetch race results for each round
+    
             for (let round = 1; round <= totalRounds; round++) {
-                const roundResponse = await fetch(`https://ergast.com/api/f1/${season}/${round}/results.json`);
+                console.log(`Fetching standings for round ${round}`);
+    
+                const roundResponse = await fetch(`/api/f1/${season}/${round}/driverStandings.json`);
                 const roundData = await roundResponse.json();
-                const raceResults = roundData.MRData.RaceTable.Races[0]?.Results || [];
-
-                // Update points based on actual race results
-                raceResults.forEach(result => {
-                    if (driverPoints[result.Driver.driverId]) {
-                        driverPoints[result.Driver.driverId][round - 1] = parseFloat(result.points);
-                    }
+    
+                if (!roundData.MRData.StandingsTable.StandingsLists.length) {
+                    console.warn(`No standings data for round ${round}`);
+                    continue;
+                }
+    
+                const standings = roundData.MRData.StandingsTable.StandingsLists[0].DriverStandings || [];
+    
+                standings.forEach(result => {
+                    let driverId = result.Driver.driverId;
+                    let points = parseFloat(result.points);
+    
+                    // Directly assign the API's cumulative points without adding previous rounds
+                    driverPoints[driverId][round - 1] = points;
                 });
-
-                // Ensure cumulative tracking without overcounting
-                allDrivers.forEach(driver => {
-                    if (round > 1) {
-                        driverPoints[driver.id][round - 1] += driverPoints[driver.id][round - 2];
-                    }
-                });
+    
+                console.log(`Processed round ${round} standings:`, driverPoints);
             }
         } catch (error) {
             console.error("Error fetching driver standings:", error);
         }
-
+    
+        console.log("Final processed driver points:", driverPoints);
         return driverPoints;
+    }
+
+    async function fetchDriverStandings(season, round) {
+        try {
+            const response = await fetch(`/api/f1/${season}/${round}/driverStandings.json`);
+            const data = await response.json();
+    
+            if (!data.MRData || !data.MRData.StandingsTable || !data.MRData.StandingsTable.StandingsLists) {
+                console.error("Invalid API response format:", data);
+                return;
+            }
+    
+            // Ensure StandingsLists[0] exists
+            const standingsLists = data.MRData.StandingsTable.StandingsLists;
+            const driverStandings = standingsLists.length > 0 ? standingsLists[0].DriverStandings : [];
+    
+            console.log("Driver Standings Fetched:", driverStandings); // Debugging line
+    
+            return driverStandings;
+        } catch (error) {
+            console.error("Error fetching driver standings:", error);
+            return [];
+        }
+    }
+    
+    // Ensure that data is mapped correctly when displaying the points
+    async function displayDriverStandings(season, totalRounds) {
+        let driverPoints = {};
+    
+        // Fetch all rounds
+        for (let round = 1; round <= totalRounds; round++) {
+            const standings = await fetchDriverStandings(season, round);
+    
+            standings.forEach(result => {
+                let driverId = result.Driver.driverId;
+                let points = parseFloat(result.points);
+    
+                if (!driverPoints[driverId]) {
+                    driverPoints[driverId] = new Array(totalRounds).fill(0);
+                }
+    
+                driverPoints[driverId][round - 1] = points;
+    
+                // Ensure cumulative tracking
+                if (round > 1) {
+                    driverPoints[driverId][round - 1] += driverPoints[driverId][round - 2];
+                }
+            });
+        }
+    
+        console.log("Final Driver Points Data:", driverPoints); // Debugging line
+        updateChart(driverPoints, totalRounds);
+    }
+    
+    // Function to update the visualization
+    function updateChart(driverPoints, totalRounds) {
+        let labels = Array.from({ length: totalRounds }, (_, i) => `Round ${i + 1}`);
+        let datasets = Object.keys(driverPoints).map(driverId => ({
+            label: `Driver ${driverId}`,
+            data: driverPoints[driverId],
+            fill: false,
+            borderColor: getRandomColor(),
+            tension: 0.1
+        }));
+    
+        let ctx = document.getElementById("driverStandingsChart").getContext("2d");
+        new Chart(ctx, {
+            type: "line",
+            data: { labels, datasets },
+            options: { responsive: true }
+        });
     }
 
     // Fetch all drivers' data and render chart
     async function fetchAndRenderChart(season) {
         let datasets = [];
         showLoadingMessage(true);
-
+    
         const driverPoints = await fetchAllDriverPoints(season);
-
+    
         allDrivers.forEach(driver => {
-            if (driverPoints[driver.id]) {
+            if (driverPoints[driver.id] && driverPoints[driver.id].some(point => point > 0)) { 
                 datasets.push({
                     label: driver.name,
                     data: driverPoints[driver.id],
                     borderColor: "#" + Math.floor(Math.random() * 16777215).toString(16),
-                    fill: false,
-                    hidden: false
+                    fill: false
                 });
             }
         });
-
+    
+        if (datasets.length === 0) {
+            console.warn("No valid driver data found for visualization.");
+        }
+    
         renderChart(allRounds, datasets, season);
         showLoadingMessage(false);
     }
@@ -171,8 +249,8 @@ document.addEventListener("DOMContentLoaded", () => {
     // Fetch driver race results for a specific round
     async function fetchRaceResults(season, round, driverId) {
         try {
-            const response = await fetch(`https://ergast.com/api/f1/${season}/${round}/results.json`);
-            const data = await response.json();
+            const roundResponse = await fetch(`/api/f1/${season}/${round}/results.json`);
+            const data = await roundResponse.json();
             const raceResults = data.MRData.RaceTable.Races[0].Results;
     
             // Find the specific driver's results

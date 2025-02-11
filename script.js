@@ -5,7 +5,7 @@ const visualization = document.getElementById('visualization');
 
 // Function to fetch and display driver standings
 async function fetchDriverStandings(year) {
-  const API_URL = `https://ergast.com/api/f1/${year}/driverStandings.json`;
+  const API_URL = `/api/f1/${year}/driverStandings.json`;
   try {
     const response = await fetch(API_URL);
     const data = await response.json();
@@ -18,7 +18,7 @@ async function fetchDriverStandings(year) {
 
 // Function to fetch and populate races for a selected year
 async function fetchRaces(year) {
-  const API_URL = `https://ergast.com/api/f1/${year}.json`;
+  const API_URL = `/api/f1/${year}.json`;
   try {
     const response = await fetch(API_URL);
     const data = await response.json();
@@ -52,25 +52,26 @@ function populateRaceDropdown(data) {
 
 // Function to fetch and display race results
 async function fetchRaceResults(year, round) {
-  const raceResultsURL = `https://ergast.com/api/f1/${year}/${round}/results.json`;
+  const raceResultsURL = `/api/f1/${year}/${round}/results.json`;
 
   try {
     const response = await fetch(raceResultsURL);
     const data = await response.json();
+    console.log("DEBUG: API Response:", data); // 🚀 Add this for debugging
     const raceResults = data.MRData.RaceTable.Races[0];
     displayRaceResults(raceResults);
   } catch (error) {
-    visualization.innerHTML = `<h2>Error loading race results. Please try again later.</h2>`;
     console.error('Error fetching race results:', error);
+    visualization.innerHTML = `<h2>Error loading race results. Please try again later.</h2>`;
   }
 }
 
 // Function to display race results with points calculation
 function displayRaceResults(race) {
-  const results = race?.Results;
+  const results = race?.Results || []; // Ensure we always have an array
 
-  if (!results) {
-    visualization.innerHTML = `<h2>No results available for this race.</h2>`;
+  if (results.length === 0) {
+    visualization.innerHTML = `<h2>No race results found for this round.</h2>`;
     return;
   }
 
@@ -91,14 +92,11 @@ function displayRaceResults(race) {
   `;
 
   results.forEach((result) => {
-    const { position, points, status, Driver, Constructor, Time } = result;
+    const { position, points, status, Driver, Constructor, raceTime } = result;
 
-    const time = Time ? Time.time : 'N/A';
+    const time = raceTime || 'N/A';
     const driverName = `${Driver.givenName} ${Driver.familyName}`;
     const constructorName = Constructor.name;
-
-    // Points awarded in the race
-    const pointsAwarded = parseFloat(points || 0);
 
     table += `
       <tr>
@@ -107,7 +105,7 @@ function displayRaceResults(race) {
         <td>${constructorName}</td>
         <td>${time}</td>
         <td>${status}</td>
-        <td>${pointsAwarded}</td>
+        <td>${points}</td>
       </tr>
     `;
   });

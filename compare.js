@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Fetch available seasons (starting from 1958)
     async function loadSeasons() {
         try {
-            const response = await fetch("https://ergast.com/api/f1/seasons.json?limit=100");
+            const response = await fetch("/api/f1/seasons.json");
             const data = await response.json();
             const seasons = data.MRData.SeasonTable.Seasons
                 .map(season => season.season)
@@ -34,7 +34,7 @@ document.addEventListener("DOMContentLoaded", () => {
         showLoadingMessage(true);
 
         try {
-            const response = await fetch(`https://ergast.com/api/f1/${season}/constructors.json`);
+            const response = await fetch(`/api/f1/${season}/constructors.json`);
             const data = await response.json();
             allTeams = data.MRData.ConstructorTable.Constructors.map(team => ({
                 name: team.name,
@@ -54,12 +54,12 @@ document.addEventListener("DOMContentLoaded", () => {
         let totalRounds = 0;
 
         try {
-            const response = await fetch(`https://ergast.com/api/f1/${season}.json`);
+            const response = await fetch(`/api/f1/${season}.json`);
             const data = await response.json();
             totalRounds = data.MRData.RaceTable.Races.length;
 
             for (let round = 1; round <= totalRounds; round++) {
-                const roundResponse = await fetch(`https://ergast.com/api/f1/${season}/${round}/constructorStandings.json`);
+                const roundResponse = await fetch(`/api/f1/${season}/${round}/constructorStandings.json`);
                 const roundData = await roundResponse.json();
                 const standings = roundData.MRData.StandingsTable.StandingsLists[0]?.ConstructorStandings || [];
 
