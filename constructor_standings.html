@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Constructor Standings | F1 Data Viz</title>
+    <link rel="stylesheet" href="standings.css">
+</head>
+<body>
+    <div class="wrapper">
+        <header>
+            <h1>F1 Constructor Standings</h1>
+            <nav class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="compare_drivers.html">Compare Drivers</a>
+                <a href="drivers_standings.html">Driver Standings</a>
+                <a href="constructor_standings.html">Constructor Standings</a>
+            </nav>
+        </header>
+
+        <main>
+            <section class="selection-container">
+                <h2>Select a Season</h2>
+                <label for="season">Season:</label>
+                <select id="season"></select>
+            </section>
+
+            <section class="standings-container">
+                <h2>Constructor Standings</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Position</th>
+                            <th>Constructor</th>
+                            <th>Points</th>
+                        </tr>
+                    </thead>
+                    <tbody id="standings-body">
+                        <tr><td colspan="3">Select a season to load standings.</td></tr>
+                    </tbody>
+                </table>
+            </section>
+        </main>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 F1 Data Visualization. All rights reserved.</p>
+    </footer>
+
+    <script src="constructor_standings.js"></script>
+</body>
+</html>
