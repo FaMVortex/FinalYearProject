@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Multi-Year Constructor Comparison</title>
+  <link rel="stylesheet" href="multi_year_team_comparison.css">
+  <!-- Include Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="wrapper">
+    <header>
+      <h1>Multi-Year Constructor Comparison</h1>
+      <nav class="nav-links">
+        <a href="index.html">Home</a>
+        <a href="multi_year_driver_comparison.html">Driver (Multi-Year)</a>
+        <a href="multi_year_team_comparison.html">Team (Multi-Year)</a>
+      </nav>
+    </header>
+
+    <main>
+      <!-- 1) Year range -->
+      <section class="selection-container">
+        <h2>Select a Year Range First</h2>
+        <label for="startYear">Start Year:</label>
+        <input type="number" id="startYear" value="2018" />
+
+        <label for="endYear">End Year:</label>
+        <input type="number" id="endYear" value="2022" />
+
+        <button id="loadTeamsBtn">Load Teams</button>
+      </section>
+
+      <!-- 2) Team A & B -->
+      <section class="selection-container">
+        <h2>Select Teams</h2>
+        <label for="teamA">Team A:</label>
+        <select id="teamA">
+          <option value="">-- Select Team A --</option>
+        </select>
+
+        <label for="teamB">Team B:</label>
+        <select id="teamB">
+          <option value="">-- Select Team B --</option>
+        </select>
+
+        <button id="compareBtn">Compare</button>
+      </section>
+
+      <!-- 3) Table vs. Chart toggle -->
+      <section class="selection-container">
+        <h2>Display Options</h2>
+        <label>
+          <input type="radio" name="viewMode" value="table" checked />
+          Table View
+        </label>
+        <label>
+          <input type="radio" name="viewMode" value="chart" />
+          Chart View
+        </label>
+      </section>
+
+      <!-- 4) Table container -->
+      <section class="standings-container" id="tableContainer">
+        <h2>Comparison Results (Table)</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Year</th>
+              <th id="teamACol">Team A</th>
+              <th id="teamBCol">Team B</th>
+            </tr>
+          </thead>
+          <tbody id="comparison-body">
+            <!-- dynamically filled by JS -->
+          </tbody>
+        </table>
+      </section>
+
+      <!-- 5) Chart container (hidden by default) -->
+      <section class="standings-container" id="chartContainer" style="display: none;">
+        <h2>Comparison Results (Chart)</h2>
+        <canvas id="comparisonChart" width="800" height="400"></canvas>
+      </section>
+    </main>
+  </div>
+
+  <footer>
+    <p>&copy; 2025 F1 Data Visualization. All rights reserved.</p>
+  </footer>
+
+  <script src="multi_year_team_comparison.js"></script>
+</body>
+</html>
