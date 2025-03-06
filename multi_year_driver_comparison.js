@@ -1,8 +1,10 @@
 document.addEventListener("DOMContentLoaded", () => {
   const startYearSelect = document.getElementById("startYear");
   const endYearSelect = document.getElementById("endYear");
-  const driverCheckboxesDiv = document.getElementById("driverCheckboxes"); // container for checkboxes
+  const driverCheckboxesDiv = document.getElementById("driverCheckboxes");
   const compareBtn = document.getElementById("compareBtn");
+
+  const metricSelect = document.getElementById("metricSelect");
 
   const tableContainer = document.getElementById("tableContainer");
   const chartContainer = document.getElementById("chartContainer");
@@ -10,7 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const comparisonTableBody = document.getElementById("comparisonTableBody");
   let comparisonChart = null;
 
-  // 1) Load seasons
+  // Load all known seasons
   async function loadSeasons() {
     try {
       const resp = await fetch("/api/f1/seasons.json");
@@ -31,7 +33,6 @@ document.addEventListener("DOMContentLoaded", () => {
         endYearSelect.appendChild(opt2);
       });
 
-      // Default
       startYearSelect.value = seasons[0];
       endYearSelect.value = seasons[seasons.length - 1];
     } catch (err) {
@@ -39,7 +40,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // 2) Load drivers for the selected range, populate as checkboxes
+  // Load drivers for the selected range (checkboxes)
   async function loadDriversForRange() {
     const start = parseInt(startYearSelect.value);
     const end = parseInt(endYearSelect.value);
@@ -49,7 +50,7 @@ document.addEventListener("DOMContentLoaded", () => {
       driverCheckboxesDiv.innerHTML = "";
       const resp = await fetch(`/api/f1/drivers/range?startYear=${start}&endYear=${end}`);
       const data = await resp.json();
-      const driverList = data.MRData.DriverTable; // e.g. [ { driverId:'hamilton', fullName:'Lewis Hamilton'}, ...]
+      const driverList = data.MRData.DriverTable || [];
 
       driverList.forEach(d => {
         const wrapper = document.createElement("div");
@@ -73,7 +74,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // 3) Compare drivers, showing per-year points
+  // Compare drivers for the chosen metric
   async function compareDrivers() {
     const startYear = parseInt(startYearSelect.value);
     const endYear = parseInt(endYearSelect.value);
@@ -91,15 +92,20 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     const driverIds = Array.from(checkedBoxes).map(cb => cb.value);
 
-    // Build the query
-    const url = `/api/f1/multiYearDriverComparison?drivers=${driverIds.join(',')}&startYear=${startYear}&endYear=${endYear}`;
+    // Retrieve the selected metric
+    const metric = metricSelect.value; // e.g. 'avgFinish'
+
+    // Build the query with metric
+    const url = `/api/f1/multiYearDriverComparison?drivers=${driverIds.join(',')}`
+              + `&startYear=${startYear}&endYear=${endYear}`
+              + `&metric=${metric}`;
+
     try {
       const resp = await fetch(url);
       const data = await resp.json();
       const resultsObj = data.MRData.MultiYearDriverComparison || {};
 
-      // Convert to array
-      // E.g. { 'hamilton': { driverId:'hamilton', yearlyPoints:[{year,points}...], totalPoints: X}, ... }
+      // Each driver => { driverId, yearlyPoints: [{year,points}], totalPoints }
       const resultsArray = Object.values(resultsObj).map(item => ({
         driverId: item.driverId,
         yearlyPoints: item.yearlyPoints || [],
@@ -113,7 +119,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
       const sortedYears = Array.from(allYears).sort((a,b) => a - b);
 
-      // Map driverId back to label text from the checkboxes
+      // Map driverId back to label
       resultsArray.forEach(r => {
         const matchingCB = document.querySelector(`#driverCheckboxes input[value="${r.driverId}"]`);
         if (matchingCB) {
@@ -124,7 +130,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       });
 
-      // Render table or chart
       const viewMode = document.querySelector('input[name="viewMode"]:checked').value;
       if (viewMode === "table") {
         renderTable(resultsArray, sortedYears);
@@ -141,27 +146,26 @@ document.addEventListener("DOMContentLoaded", () => {
     tableContainer.style.display = "block";
     chartContainer.style.display = "none";
 
-    // Build table header
     let headerHTML = "<tr><th>Driver</th>";
     years.forEach(y => { headerHTML += `<th>${y}</th>`; });
     headerHTML += "<th>Total</th></tr>";
     comparisonTableHead.innerHTML = headerHTML;
 
-    // Body
     comparisonTableBody.innerHTML = "";
     results.forEach(r => {
       let rowHTML = `<tr><td>${r.name}</td>`;
-      let yearMap = {};
-      r.yearlyPoints.forEach(yp => yearMap[yp.year] = yp.points);
+      const yearMap = {};
+      r.yearlyPoints.forEach(yp => { yearMap[yp.year] = yp.points; });
       years.forEach(y => {
-        rowHTML += `<td>${yearMap[y] || 0}</td>`;
+        rowHTML += `<td>${yearMap[y] !== undefined ? yearMap[y].toFixed(2) : 0}</td>`;
       });
-      rowHTML += `<td>${r.totalPoints}</td></tr>`;
+      // If you want to show the total with 2 decimals:
+      rowHTML += `<td>${r.totalPoints.toFixed(2)}</td></tr>`;
       comparisonTableBody.innerHTML += rowHTML;
     });
   }
 
-  // Render chart (multi-line)
+  // Render multi-line chart
   function renderChart(results, years) {
     tableContainer.style.display = "none";
     chartContainer.style.display = "block";
@@ -176,10 +180,7 @@ document.addEventListener("DOMContentLoaded", () => {
       r.yearlyPoints.forEach(yp => { yearMap[yp.year] = yp.points; });
       const data = years.map(y => yearMap[y] || 0);
 
-      return {
-        label: r.name,
-        data
-      };
+      return { label: r.name, data };
     });
 
     const ctx = document.getElementById("comparisonChart").getContext("2d");

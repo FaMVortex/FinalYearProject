@@ -16,7 +16,6 @@
     </header>
 
     <main>
-      <!-- Selection container: start year, end year, driver checkboxes, table/chart -->
       <section class="selection-container" style="text-align:center;">
         <h2>Select Year Range & Drivers</h2>
 
@@ -28,13 +27,26 @@
 
         <br><br>
 
+        <!-- Checkbox-based driver selection -->
         <label>Drivers (2–4):</label>
-        <!-- Instead of <select>, we use a container for checkboxes: -->
         <div id="driverCheckboxes" style="margin-top: 10px; max-height: 150px; overflow-y: auto;">
-          <!-- Populated dynamically via JS -->
+          <!-- Populated dynamically in JS -->
         </div>
 
         <br>
+
+        <!-- NEW: Metric selection -->
+        <label for="metricSelect">Metric:</label>
+        <select id="metricSelect">
+          <option value="totalPoints">Total Points</option>
+          <option value="avgFinish">Average Finishing Position</option>
+          <option value="dnfs">Number of DNFs</option>
+          <option value="avgQual">Average Qualifying Position</option>
+          <option value="wins">Number of Wins</option>
+          <option value="avgPointsPerRace">Average Points per Race</option>
+        </select>
+
+        <br><br>
 
         <label>View Mode:</label>
         <input type="radio" name="viewMode" value="table" checked> Table
@@ -44,7 +56,6 @@
         <button id="compareBtn">Compare</button>
       </section>
 
-      <!-- Table container -->
       <section class="standings-container" id="tableContainer" style="display:none;">
         <h2>Comparison Table</h2>
         <table>
@@ -53,7 +64,6 @@
         </table>
       </section>
 
-      <!-- Chart container -->
       <section class="chart-container" id="chartContainer" style="display:none;">
         <h2>Comparison Chart</h2>
         <canvas id="comparisonChart" width="600" height="400"></canvas>

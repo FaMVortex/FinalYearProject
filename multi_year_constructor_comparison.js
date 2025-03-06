@@ -1,8 +1,10 @@
 document.addEventListener("DOMContentLoaded", () => {
   const startYearSelect = document.getElementById("startYear");
   const endYearSelect = document.getElementById("endYear");
-  const constructorCheckboxesDiv = document.getElementById("constructorCheckboxes"); // new container
+  const constructorCheckboxesDiv = document.getElementById("constructorCheckboxes");
   const compareBtn = document.getElementById("compareBtn");
+
+  const metricSelect = document.getElementById("metricSelect");
 
   const tableContainer = document.getElementById("tableContainer");
   const chartContainer = document.getElementById("chartContainer");
@@ -10,7 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const comparisonTableBody = document.getElementById("comparisonTableBody");
   let comparisonChart = null;
 
-  // 1) Load seasons
+  // Load seasons
   async function loadSeasons() {
     try {
       const resp = await fetch("/api/f1/seasons.json");
@@ -38,7 +40,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // 2) Load constructors for the selected range, create checkboxes
+  // Load constructors as checkboxes
   async function loadConstructorsForRange() {
     const start = parseInt(startYearSelect.value);
     const end = parseInt(endYearSelect.value);
@@ -48,8 +50,7 @@ document.addEventListener("DOMContentLoaded", () => {
       constructorCheckboxesDiv.innerHTML = "";
       const resp = await fetch(`/api/f1/constructors/range?startYear=${start}&endYear=${end}`);
       const data = await resp.json();
-      const constructorList = data.MRData.ConstructorTable; 
-      // e.g. [ {constructorId:'mercedes', name:'Mercedes'}, ...]
+      const constructorList = data.MRData.ConstructorTable || [];
 
       constructorList.forEach(c => {
         const wrapper = document.createElement("div");
@@ -73,7 +74,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // 3) Compare constructors, show per-year
+  // Compare constructors for chosen metric
   async function compareConstructors() {
     const startYear = parseInt(startYearSelect.value);
     const endYear = parseInt(endYearSelect.value);
@@ -83,7 +84,7 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    // Grab checked teams
+    // Gather selected constructors
     const checkedBoxes = document.querySelectorAll('#constructorCheckboxes input[type="checkbox"]:checked');
     if (checkedBoxes.length < 2 || checkedBoxes.length > 4) {
       alert("Please select between 2 and 4 constructors.");
@@ -91,14 +92,20 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     const teamIds = Array.from(checkedBoxes).map(cb => cb.value);
 
-    const url = `/api/f1/multiYearConstructorComparison?teams=${teamIds.join(',')}&startYear=${startYear}&endYear=${endYear}`;
+    // Retrieve the metric
+    const metric = metricSelect.value; // e.g. 'dnfs', 'wins', etc.
+
+    // Build query
+    const url = `/api/f1/multiYearConstructorComparison?teams=${teamIds.join(',')}`
+              + `&startYear=${startYear}&endYear=${endYear}`
+              + `&metric=${metric}`;
+
     try {
       const resp = await fetch(url);
       const data = await resp.json();
       const resultsObj = data.MRData.MultiYearConstructorComparison || {};
 
-      // Convert to array
-      // e.g. { 'mercedes':{constructorId:'mercedes',yearlyPoints:[],totalPoints:X}, 'ferrari':... }
+      // Convert to array: { mercedes:{...}, ferrari:{...} }
       const resultsArray = Object.values(resultsObj).map(item => ({
         constructorId: item.constructorId,
         yearlyPoints: item.yearlyPoints || [],
@@ -112,7 +119,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
       const sortedYears = Array.from(allYears).sort((a,b) => a - b);
 
-      // Map constructorId back to label text
+      // Map constructorId -> label text
       resultsArray.forEach(r => {
         const matchingCB = document.querySelector(`#constructorCheckboxes input[value="${r.constructorId}"]`);
         if (matchingCB) {
@@ -123,7 +130,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       });
 
-      // Show table or chart
       const viewMode = document.querySelector('input[name="viewMode"]:checked').value;
       if (viewMode === "table") {
         renderTable(resultsArray, sortedYears);
@@ -135,7 +141,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // 4) Table
+  // Render table
   function renderTable(results, years) {
     tableContainer.style.display = "block";
     chartContainer.style.display = "none";
@@ -151,14 +157,14 @@ document.addEventListener("DOMContentLoaded", () => {
       const yearMap = {};
       r.yearlyPoints.forEach(yp => { yearMap[yp.year] = yp.points; });
       years.forEach(y => {
-        rowHTML += `<td>${yearMap[y] || 0}</td>`;
+        rowHTML += `<td>${yearMap[y] !== undefined ? yearMap[y].toFixed(2) : 0}</td>`;
       });
-      rowHTML += `<td>${r.totalPoints}</td></tr>`;
+      rowHTML += `<td>${r.totalPoints.toFixed(2)}</td></tr>`;
       comparisonTableBody.innerHTML += rowHTML;
     });
   }
 
-  // 5) Chart
+  // Render chart (multi-line)
   function renderChart(results, years) {
     tableContainer.style.display = "none";
     chartContainer.style.display = "block";
@@ -187,7 +193,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Event listeners
+  // Listeners
   compareBtn.addEventListener("click", compareConstructors);
   startYearSelect.addEventListener("change", loadConstructorsForRange);
   endYearSelect.addEventListener("change", loadConstructorsForRange);

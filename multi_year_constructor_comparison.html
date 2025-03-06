@@ -28,13 +28,24 @@
         <br><br>
 
         <label>Constructors (2–4):</label>
-        <!-- Container for checkboxes instead of <select multiple> -->
         <div id="constructorCheckboxes" style="margin-top: 10px; max-height: 150px; overflow-y: auto;">
-          <!-- Populated dynamically via JS -->
+          <!-- Populated dynamically in JS -->
         </div>
 
         <br>
 
+        <!-- NEW: metric selection -->
+        <label for="metricSelect">Metric:</label>
+        <select id="metricSelect">
+          <option value="totalPoints">Total Points</option>
+          <option value="avgFinish">Average Finishing Position</option>
+          <option value="dnfs">Number of DNFs</option>
+          <option value="avgQual">Average Qualifying Position</option>
+          <option value="wins">Number of Wins</option>
+          <option value="avgPointsPerRace">Average Points per Race</option>
+        </select>
+
+        <br><br>
         <label>View Mode:</label>
         <input type="radio" name="viewMode" value="table" checked> Table
         <input type="radio" name="viewMode" value="chart"> Chart
