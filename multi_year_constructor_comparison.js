@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
   const startYearSelect = document.getElementById("startYear");
   const endYearSelect = document.getElementById("endYear");
-  const driverCheckboxesDiv = document.getElementById("driverCheckboxes"); // container for checkboxes
+  const constructorCheckboxesDiv = document.getElementById("constructorCheckboxes"); // new container
   const compareBtn = document.getElementById("compareBtn");
 
   const tableContainer = document.getElementById("tableContainer");
@@ -20,18 +20,17 @@ document.addEventListener("DOMContentLoaded", () => {
         .sort((a,b) => a - b);
 
       seasons.forEach(year => {
-        const opt1 = document.createElement("option");
-        opt1.value = year;
-        opt1.textContent = year;
-        startYearSelect.appendChild(opt1);
+        const optStart = document.createElement("option");
+        optStart.value = year;
+        optStart.textContent = year;
+        startYearSelect.appendChild(optStart);
 
-        const opt2 = document.createElement("option");
-        opt2.value = year;
-        opt2.textContent = year;
-        endYearSelect.appendChild(opt2);
+        const optEnd = document.createElement("option");
+        optEnd.value = year;
+        optEnd.textContent = year;
+        endYearSelect.appendChild(optEnd);
       });
 
-      // Default
       startYearSelect.value = seasons[0];
       endYearSelect.value = seasons[seasons.length - 1];
     } catch (err) {
@@ -39,69 +38,69 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // 2) Load drivers for the selected range, populate as checkboxes
-  async function loadDriversForRange() {
+  // 2) Load constructors for the selected range, create checkboxes
+  async function loadConstructorsForRange() {
     const start = parseInt(startYearSelect.value);
     const end = parseInt(endYearSelect.value);
     if (start > end) return;
 
     try {
-      driverCheckboxesDiv.innerHTML = "";
-      const resp = await fetch(`/api/f1/drivers/range?startYear=${start}&endYear=${end}`);
+      constructorCheckboxesDiv.innerHTML = "";
+      const resp = await fetch(`/api/f1/constructors/range?startYear=${start}&endYear=${end}`);
       const data = await resp.json();
-      const driverList = data.MRData.DriverTable; // e.g. [ { driverId:'hamilton', fullName:'Lewis Hamilton'}, ...]
+      const constructorList = data.MRData.ConstructorTable; 
+      // e.g. [ {constructorId:'mercedes', name:'Mercedes'}, ...]
 
-      driverList.forEach(d => {
+      constructorList.forEach(c => {
         const wrapper = document.createElement("div");
         wrapper.style.marginBottom = "5px";
 
         const checkbox = document.createElement("input");
         checkbox.type = "checkbox";
-        checkbox.value = d.driverId;
-        checkbox.id = `driver_${d.driverId}`;
+        checkbox.value = c.constructorId;
+        checkbox.id = `constructor_${c.constructorId}`;
 
         const label = document.createElement("label");
         label.htmlFor = checkbox.id;
-        label.textContent = d.fullName || (d.forename + " " + d.surname);
+        label.textContent = c.name;
 
         wrapper.appendChild(checkbox);
         wrapper.appendChild(label);
-        driverCheckboxesDiv.appendChild(wrapper);
+        constructorCheckboxesDiv.appendChild(wrapper);
       });
     } catch (err) {
-      console.error("Error loading drivers for range:", err);
+      console.error("Error loading constructors:", err);
     }
   }
 
-  // 3) Compare drivers, showing per-year points
-  async function compareDrivers() {
+  // 3) Compare constructors, show per-year
+  async function compareConstructors() {
     const startYear = parseInt(startYearSelect.value);
     const endYear = parseInt(endYearSelect.value);
 
     if (startYear > endYear) {
-      alert("Invalid year range!");
+      alert("Invalid range!");
       return;
     }
 
-    // Collect checked drivers
-    const checkedBoxes = document.querySelectorAll('#driverCheckboxes input[type="checkbox"]:checked');
+    // Grab checked teams
+    const checkedBoxes = document.querySelectorAll('#constructorCheckboxes input[type="checkbox"]:checked');
     if (checkedBoxes.length < 2 || checkedBoxes.length > 4) {
-      alert("Please select between 2 and 4 drivers.");
+      alert("Please select between 2 and 4 constructors.");
       return;
     }
-    const driverIds = Array.from(checkedBoxes).map(cb => cb.value);
+    const teamIds = Array.from(checkedBoxes).map(cb => cb.value);
 
-    // Build the query
-    const url = `/api/f1/multiYearDriverComparison?drivers=${driverIds.join(',')}&startYear=${startYear}&endYear=${endYear}`;
+    const url = `/api/f1/multiYearConstructorComparison?teams=${teamIds.join(',')}&startYear=${startYear}&endYear=${endYear}`;
     try {
       const resp = await fetch(url);
       const data = await resp.json();
-      const resultsObj = data.MRData.MultiYearDriverComparison || {};
+      const resultsObj = data.MRData.MultiYearConstructorComparison || {};
 
       // Convert to array
-      // E.g. { 'hamilton': { driverId:'hamilton', yearlyPoints:[{year,points}...], totalPoints: X}, ... }
+      // e.g. { 'mercedes':{constructorId:'mercedes',yearlyPoints:[],totalPoints:X}, 'ferrari':... }
       const resultsArray = Object.values(resultsObj).map(item => ({
-        driverId: item.driverId,
+        constructorId: item.constructorId,
         yearlyPoints: item.yearlyPoints || [],
         totalPoints: item.totalPoints || 0
       }));
@@ -113,18 +112,18 @@ document.addEventListener("DOMContentLoaded", () => {
       });
       const sortedYears = Array.from(allYears).sort((a,b) => a - b);
 
-      // Map driverId back to label text from the checkboxes
+      // Map constructorId back to label text
       resultsArray.forEach(r => {
-        const matchingCB = document.querySelector(`#driverCheckboxes input[value="${r.driverId}"]`);
+        const matchingCB = document.querySelector(`#constructorCheckboxes input[value="${r.constructorId}"]`);
         if (matchingCB) {
           const labelEl = matchingCB.nextElementSibling;
-          r.name = labelEl ? labelEl.textContent : r.driverId;
+          r.name = labelEl ? labelEl.textContent : r.constructorId;
         } else {
-          r.name = r.driverId;
+          r.name = r.constructorId;
         }
       });
 
-      // Render table or chart
+      // Show table or chart
       const viewMode = document.querySelector('input[name="viewMode"]:checked').value;
       if (viewMode === "table") {
         renderTable(resultsArray, sortedYears);
@@ -132,27 +131,25 @@ document.addEventListener("DOMContentLoaded", () => {
         renderChart(resultsArray, sortedYears);
       }
     } catch (err) {
-      console.error("Error comparing drivers:", err);
+      console.error("Error comparing constructors:", err);
     }
   }
 
-  // Render table
+  // 4) Table
   function renderTable(results, years) {
     tableContainer.style.display = "block";
     chartContainer.style.display = "none";
 
-    // Build table header
-    let headerHTML = "<tr><th>Driver</th>";
+    let headerHTML = "<tr><th>Constructor</th>";
     years.forEach(y => { headerHTML += `<th>${y}</th>`; });
     headerHTML += "<th>Total</th></tr>";
     comparisonTableHead.innerHTML = headerHTML;
 
-    // Body
     comparisonTableBody.innerHTML = "";
     results.forEach(r => {
       let rowHTML = `<tr><td>${r.name}</td>`;
-      let yearMap = {};
-      r.yearlyPoints.forEach(yp => yearMap[yp.year] = yp.points);
+      const yearMap = {};
+      r.yearlyPoints.forEach(yp => { yearMap[yp.year] = yp.points; });
       years.forEach(y => {
         rowHTML += `<td>${yearMap[y] || 0}</td>`;
       });
@@ -161,7 +158,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Render chart (multi-line)
+  // 5) Chart
   function renderChart(results, years) {
     tableContainer.style.display = "none";
     chartContainer.style.display = "block";
@@ -176,10 +173,7 @@ document.addEventListener("DOMContentLoaded", () => {
       r.yearlyPoints.forEach(yp => { yearMap[yp.year] = yp.points; });
       const data = years.map(y => yearMap[y] || 0);
 
-      return {
-        label: r.name,
-        data
-      };
+      return { label: r.name, data };
     });
 
     const ctx = document.getElementById("comparisonChart").getContext("2d");
@@ -194,12 +188,12 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // Event listeners
-  compareBtn.addEventListener("click", compareDrivers);
-  startYearSelect.addEventListener("change", loadDriversForRange);
-  endYearSelect.addEventListener("change", loadDriversForRange);
+  compareBtn.addEventListener("click", compareConstructors);
+  startYearSelect.addEventListener("change", loadConstructorsForRange);
+  endYearSelect.addEventListener("change", loadConstructorsForRange);
 
   // Init
   loadSeasons().then(() => {
-    loadDriversForRange();
+    loadConstructorsForRange();
   });
 });

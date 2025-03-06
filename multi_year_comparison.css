@@ -1,0 +1,243 @@
+/* Global Styles */
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(135deg, #ff1e00, #333);
+    background-attachment: fixed;
+    background-size: cover;
+    background-repeat: no-repeat;
+    color: white;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Wrapper to center content, push footer to bottom */
+.wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+/* Header & Navigation */
+header {
+    background-color: transparent;
+    padding: 20px 0;
+}
+
+header h1 {
+    font-size: 2.5rem;
+    margin: 0;
+    animation: fadeIn 1.5s ease-in-out;
+}
+
+.nav-links {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 15px;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: white;
+    background: #ff5733;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 1rem;
+    transition: background 0.3s ease;
+}
+
+.nav-links a:hover {
+    background: #ff7849;
+}
+
+/* Fade-in keyframes */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+/* Footer styling */
+footer {
+    background: #333;
+    color: white;
+    text-align: center;
+    padding: 15px;
+    font-size: 0.9rem;
+    width: 100%;
+    position: relative;
+    bottom: 0;
+}
+
+/* Selection Container (for year range, multi-select, etc.) */
+.selection-container {
+    width: 60%;
+    max-width: 800px;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0px 4px 15px rgba(255, 255, 255, 0.1);
+    margin: 20px auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Dropdowns & Buttons */
+.selection-container label {
+    margin: 10px 0 5px;
+    font-size: 1.1rem;
+}
+
+.selection-container select {
+    width: 50%;
+    margin: 5px 0 15px;
+    padding: 8px;
+    font-size: 1rem;
+    border: 2px solid #ffcc00;
+    border-radius: 5px;
+    background: #fff;
+    color: black;
+    outline: none;
+    transition: 0.3s;
+}
+
+.selection-container button {
+    background: #ff5733;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    font-size: 1rem;
+    padding: 10px 20px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background 0.3s ease;
+}
+
+.selection-container button:hover {
+    background: #ff7849;
+}
+
+/* For multiple selection boxes (drivers/constructors) */
+.selection-container select[multiple] {
+    width: 60%;
+    height: 120px;
+    overflow-y: auto;
+}
+
+/* Table Container */
+.standings-container {
+    width: 90%;
+    max-width: 1200px;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0px 4px 15px rgba(255, 255, 255, 0.1);
+    margin: 20px auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow-x: auto;
+}
+
+.standings-container table {
+    width: 100%;
+    border-collapse: collapse;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-top: 15px;
+}
+
+.standings-container th, .standings-container td {
+    padding: 10px;
+    border: 1px solid #fff;
+    text-align: center;
+    font-size: 1rem;
+}
+
+.standings-container th {
+    background: #ffcc00;
+    color: black;
+    font-weight: bold;
+}
+
+.standings-container td {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* Highlight the last column (Total Points) if you wish */
+.standings-container th:last-child,
+.standings-container td:last-child {
+    background: rgba(255, 200, 0, 0.5);
+    font-weight: bold;
+    color: white;
+}
+
+/* Chart Container */
+.chart-container {
+    margin-top: 20px;
+    width: 90%;
+    max-width: 1200px;
+    /* Force a taller minimum height to make the chart bigger */
+    min-height: 600px; 
+    margin-left: auto;
+    margin-right: auto;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 30px; /* slightly more padding for breathing room */
+    border-radius: 10px;
+    box-shadow: 0px 4px 15px rgba(255, 255, 255, 0.1);
+}
+
+.chart-container canvas {
+    display: block;
+    max-width: 100%;
+    height: auto;  
+    margin: 0 auto; 
+    /* Optionally add min-height for the canvas if needed 
+       min-height: 500px;
+    */
+}
+
+/* Extra styling for h2 inside containers */
+.selection-container h2,
+.standings-container h2,
+.chart-container h2 {
+    font-size: 1.6rem;
+    margin-bottom: 10px;
+    color: #ffcc00;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .selection-container,
+    .standings-container,
+    .chart-container {
+        width: 90%;
+        padding: 15px;
+    }
+
+    .selection-container select {
+        width: 80%;
+    }
+    
+    .selection-container select[multiple] {
+        width: 80%;
+    }
+}
+
+@media (max-width: 480px) {
+    .selection-container label,
+    .selection-container button {
+        font-size: 0.9rem;
+    }
+    
+    .standings-container th,
+    .standings-container td {
+        font-size: 0.85rem;
+    }
+}
