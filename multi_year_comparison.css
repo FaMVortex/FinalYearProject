@@ -9,7 +9,6 @@ html, body {
     background-size: cover;
     background-repeat: no-repeat;
     color: white;
-    text-align: center;
     display: flex;
     flex-direction: column;
 }
@@ -26,6 +25,7 @@ html, body {
 header {
     background-color: transparent;
     padding: 20px 0;
+    text-align: center;
 }
 
 header h1 {
@@ -73,28 +73,123 @@ footer {
     bottom: 0;
 }
 
-/* Selection Container (for year range, multi-select, etc.) */
-.selection-container {
-    width: 60%;
-    max-width: 800px;
-    background: rgba(255, 255, 255, 0.2);
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0px 4px 15px rgba(255, 255, 255, 0.1);
+/* Main two-column layout */
+.main-content {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 20px;
+    width: 95%;
+    max-width: 1400px;
     margin: 20px auto;
+}
+
+/* Left panel for the user's selections */
+.left-panel {
+    background: rgba(255, 255, 255, 0.2);
+    width: 300px;          /* fixed width or smaller % */
+    min-width: 250px;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0px 4px 15px rgba(255, 255, 255, 0.1);
+}
+
+.left-panel h2 {
+    color: #ffcc00;
+    margin-bottom: 10px;
+}
+
+/* Right panel for table/chart */
+.right-panel {
+    flex: 1; /* takes remaining space */
     display: flex;
     flex-direction: column;
-    align-items: center;
+    gap: 20px;
 }
 
-/* Dropdowns & Buttons */
-.selection-container label {
-    margin: 10px 0 5px;
-    font-size: 1.1rem;
+/* The container for table or chart inside the right panel */
+.result-container {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    box-shadow: 0px 4px 15px rgba(255, 255, 255, 0.1);
+    padding: 20px;
+    overflow-x: auto;
 }
 
-.selection-container select {
-    width: 50%;
+/* headings inside result containers */
+.result-container h2 {
+    color: #ffcc00;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+/* Table within the results */
+.result-container table {
+    width: 100%;
+    border-collapse: collapse;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    margin-top: 15px;
+}
+
+.result-container th, .result-container td {
+    padding: 10px;
+    border: 1px solid #fff;
+    text-align: center;
+    font-size: 1rem;
+}
+
+.result-container th {
+    background: #ffcc00;
+    color: black;
+    font-weight: bold;
+}
+
+.result-container td {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.result-container th:last-child,
+.result-container td:last-child {
+    background: rgba(255, 200, 0, 0.5);
+    font-weight: bold;
+    color: white;
+}
+
+.chart-container {
+    position: relative;       /* Important for correct event detection */
+    width: 95%;
+    max-width: 1000px;        /* or 1200px if you prefer bigger */
+    margin: 0 auto 20px auto; /* center horizontally + margin bottom */
+    background: rgba(255, 255, 255, 0.1);
+    padding: 20px;
+    padding-bottom: 70px;     /* Space for the legend */
+    border-radius: 10px;
+    box-shadow: 0px 4px 15px rgba(255, 255, 255, 0.1);
+
+    /* Force a bigger container so the chart is large */
+    height: 600px;  
+}
+
+.chart-container canvas {
+    /* Let Chart.js compute the actual canvas size; no forced width/height */
+    display: block;
+    width: 100%;
+    height: 100%;
+    /* remove !important if you have that. Just let it fill. */
+}
+
+/* selection panel inside left-panel */
+.left-panel label {
+    display: block;
+    margin: 8px 0 5px;
+    font-size: 1rem;
+}
+
+.left-panel select,
+.left-panel button {
+    width: 100%;
     margin: 5px 0 15px;
     padding: 8px;
     font-size: 1rem;
@@ -106,138 +201,48 @@ footer {
     transition: 0.3s;
 }
 
-.selection-container button {
+.left-panel button {
     background: #ff5733;
     border: none;
-    border-radius: 5px;
     color: white;
     font-size: 1rem;
-    padding: 10px 20px;
     cursor: pointer;
     margin-top: 10px;
-    transition: background 0.3s ease;
 }
 
-.selection-container button:hover {
+.left-panel button:hover {
     background: #ff7849;
 }
 
-/* For multiple selection boxes (drivers/constructors) */
-.selection-container select[multiple] {
-    width: 60%;
-    height: 120px;
+/* checkboxes area */
+.checkbox-container {
+    max-height: 120px;
     overflow-y: auto;
-}
-
-/* Table Container */
-.standings-container {
-    width: 90%;
-    max-width: 1200px;
-    background: rgba(255, 255, 255, 0.2);
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0px 4px 15px rgba(255, 255, 255, 0.1);
-    margin: 20px auto;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    overflow-x: auto;
-}
-
-.standings-container table {
-    width: 100%;
-    border-collapse: collapse;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 8px;
-    overflow: hidden;
-    margin-top: 15px;
-}
-
-.standings-container th, .standings-container td {
+    margin-bottom: 15px;
+    background: rgba(0,0,0,0.2);
+    border-radius: 6px;
     padding: 10px;
-    border: 1px solid #fff;
-    text-align: center;
-    font-size: 1rem;
 }
 
-.standings-container th {
-    background: #ffcc00;
-    color: black;
-    font-weight: bold;
-}
-
-.standings-container td {
-    background: rgba(255, 255, 255, 0.1);
-}
-
-/* Highlight the last column (Total Points) if you wish */
-.standings-container th:last-child,
-.standings-container td:last-child {
-    background: rgba(255, 200, 0, 0.5);
-    font-weight: bold;
-    color: white;
-}
-
-/* Chart Container */
-.chart-container {
-    margin-top: 20px;
-    width: 90%;
-    max-width: 1200px;
-    /* Force a taller minimum height to make the chart bigger */
-    min-height: 600px; 
-    margin-left: auto;
-    margin-right: auto;
-    background: rgba(255, 255, 255, 0.1);
-    padding: 30px; /* slightly more padding for breathing room */
-    border-radius: 10px;
-    box-shadow: 0px 4px 15px rgba(255, 255, 255, 0.1);
-}
-
-.chart-container canvas {
-    display: block;
-    max-width: 100%;
-    height: auto;  
-    margin: 0 auto; 
-    /* Optionally add min-height for the canvas if needed 
-       min-height: 500px;
-    */
-}
-
-/* Extra styling for h2 inside containers */
-.selection-container h2,
-.standings-container h2,
-.chart-container h2 {
-    font-size: 1.6rem;
-    margin-bottom: 10px;
-    color: #ffcc00;
-}
+.checkbox-container div {
+    display: flex;            /* Allows horizontal alignment */
+    align-items: center;      /* Vertically center label + checkbox */
+    margin-bottom: 5px;       /* A bit of spacing between rows */
+  }
+  
+  .checkbox-container input[type="checkbox"] {
+    margin-right: 8px;        /* Space between checkbox & label text */
+  }
 
 /* Responsive Adjustments */
-@media (max-width: 768px) {
-    .selection-container,
-    .standings-container,
-    .chart-container {
-        width: 90%;
-        padding: 15px;
+@media (max-width: 1000px) {
+    .main-content {
+        flex-direction: column;
+        align-items: center;
     }
 
-    .selection-container select {
-        width: 80%;
-    }
-    
-    .selection-container select[multiple] {
-        width: 80%;
-    }
-}
-
-@media (max-width: 480px) {
-    .selection-container label,
-    .selection-container button {
-        font-size: 0.9rem;
-    }
-    
-    .standings-container th,
-    .standings-container td {
-        font-size: 0.85rem;
+    .left-panel, .right-panel {
+        width: 100%;
+        max-width: 700px;
     }
 }

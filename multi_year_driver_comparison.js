@@ -3,7 +3,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const endYearSelect = document.getElementById("endYear");
   const driverCheckboxesDiv = document.getElementById("driverCheckboxes");
   const compareBtn = document.getElementById("compareBtn");
-
   const metricSelect = document.getElementById("metricSelect");
 
   const tableContainer = document.getElementById("tableContainer");
@@ -189,7 +188,37 @@ document.addEventListener("DOMContentLoaded", () => {
       data: { labels, datasets },
       options: {
         responsive: true,
-        scales: { y: { beginAtZero: true } }
+        maintainAspectRatio: false,
+        scales: {
+          x: {
+            ticks: {
+              color: "#fff" // white x-axis labels
+            },
+            grid: {
+              color: "rgba(255,255,255,0.3)" // optional lighter grid line color
+            }
+          },
+          y: {
+            ticks: {
+              color: "#fff" // white y-axis labels
+            },
+            grid: {
+              color: "rgba(255,255,255,0.3)"
+            }
+          }
+        },
+        plugins: {
+          legend: {
+            labels: {
+              color: "#fff" // white legend text
+            }
+          },
+          title: {
+            display: false, // or true if you have a chart title
+            text: "Comparison Chart",
+            color: "#fff"
+          }
+        }
       }
     });
   }
@@ -200,7 +229,5 @@ document.addEventListener("DOMContentLoaded", () => {
   endYearSelect.addEventListener("change", loadDriversForRange);
 
   // Init
-  loadSeasons().then(() => {
-    loadDriversForRange();
-  });
+  loadSeasons().then(loadDriversForRange);
 });

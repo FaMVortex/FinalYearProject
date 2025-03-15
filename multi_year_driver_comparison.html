@@ -15,9 +15,11 @@
       </nav>
     </header>
 
-    <main>
-      <section class="selection-container" style="text-align:center;">
-        <h2>Select Year Range & Drivers</h2>
+    <main class="main-content">
+
+      <!-- Left Panel for user selection -->
+      <section class="left-panel">
+        <h2>Driver Selections</h2>
 
         <label for="startYear">Start Year:</label>
         <select id="startYear"></select>
@@ -25,17 +27,11 @@
         <label for="endYear">End Year:</label>
         <select id="endYear"></select>
 
-        <br><br>
-
-        <!-- Checkbox-based driver selection -->
         <label>Drivers (2–4):</label>
-        <div id="driverCheckboxes" style="margin-top: 10px; max-height: 150px; overflow-y: auto;">
-          <!-- Populated dynamically in JS -->
+        <div id="driverCheckboxes" class="checkbox-container">
+          <!-- Dynamically populated in JS -->
         </div>
 
-        <br>
-
-        <!-- NEW: Metric selection -->
         <label for="metricSelect">Metric:</label>
         <select id="metricSelect">
           <option value="totalPoints">Total Points</option>
@@ -46,28 +42,31 @@
           <option value="avgPointsPerRace">Average Points per Race</option>
         </select>
 
-        <br><br>
-
         <label>View Mode:</label>
-        <input type="radio" name="viewMode" value="table" checked> Table
-        <input type="radio" name="viewMode" value="chart"> Chart
+        <div style="margin-bottom:10px;">
+          <input type="radio" name="viewMode" value="table" checked> Table
+          <input type="radio" name="viewMode" value="chart"> Chart
+        </div>
 
-        <br><br>
         <button id="compareBtn">Compare</button>
       </section>
 
-      <section class="standings-container" id="tableContainer" style="display:none;">
-        <h2>Comparison Table</h2>
-        <table>
-          <thead id="comparisonTableHead"></thead>
-          <tbody id="comparisonTableBody"></tbody>
-        </table>
+      <!-- Right Panel for table/chart results -->
+      <section class="right-panel">
+        <div id="tableContainer" class="result-container" style="display:none;">
+          <h2>Comparison Table</h2>
+          <table>
+            <thead id="comparisonTableHead"></thead>
+            <tbody id="comparisonTableBody"></tbody>
+          </table>
+        </div>
+
+        <div id="chartContainer" class="chart-container" style="display:none;">
+          <h2>Comparison Chart</h2>
+          <canvas id="comparisonChart"></canvas>
+        </div>
       </section>
 
-      <section class="chart-container" id="chartContainer" style="display:none;">
-        <h2>Comparison Chart</h2>
-        <canvas id="comparisonChart" width="600" height="400"></canvas>
-      </section>
     </main>
 
     <footer>
