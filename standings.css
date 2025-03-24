@@ -67,7 +67,7 @@ h1 {
     align-items: center;
     justify-content: center;
     text-align: center;
-    margin-bottom: 20px;
+    margin: 0 auto 20px auto; /* This line centers the div horizontally and adds bottom margin */
 }
 
 #season {
@@ -159,4 +159,21 @@ footer {
     text-align: center;
     padding: 15px;
     font-size: 0.9rem;
+}
+
+.gold-cell {
+    background-color: gold !important;
+    color: black;
+}
+.silver-cell {
+    background-color: silver !important;
+    color: black;
+}
+.bronze-cell {
+    background-color: #CD7F32 !important; /* Bronze */
+    color: black;
+}
+.green-cell {
+    background-color: #9ACD32 !important; /* Greenish */
+    color: black;
 }

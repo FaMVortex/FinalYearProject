@@ -46,7 +46,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 Object.keys(raceOrder).forEach(round => {
                     let position = driver.Races[round] || "-";
-                    row += `<td>${position}</td>`;
+                    let numericPos = parseInt(position, 10);  // parse “1”, “2”, “3”, etc.
+                
+                    let cellClass = "";
+                    // Only highlight if it's a valid number
+                    if (!isNaN(numericPos)) {
+                      if (numericPos === 1)       cellClass = "gold-cell";
+                      else if (numericPos === 2)  cellClass = "silver-cell";
+                      else if (numericPos === 3)  cellClass = "bronze-cell";
+                      else if (numericPos >= 4 && numericPos <= 10)
+                        cellClass = "green-cell";
+                      // Else no highlight
+                    }
+                
+                    // Insert the cell with the class (if any)
+                    row += `<td class="${cellClass}">${position}</td>`;
                 });
 
                 row += `<td>${driver.TotalPoints}</td></tr>`;

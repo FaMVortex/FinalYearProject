@@ -53,12 +53,26 @@ document.addEventListener("DOMContentLoaded", () => {
                 Object.keys(raceOrder).forEach(round => {
                     const positionsArray = constructorObj.Races[round] || [];
                     if (positionsArray.length === 0) {
-                        rowHTML += `<td>-</td>`;
+                      rowHTML += `<td>-</td>`;
                     } else {
-                        // e.g., if positionsArray = ["1","5"], display "1, 5"
-                        rowHTML += `<td>${positionsArray.join(", ")}</td>`;
+                      // Build a string with each position wrapped in a <span> that’s conditionally highlighted
+                      const cellContent = positionsArray.map(pos => {
+                        let numericPos = parseInt(pos, 10);
+                        let cellClass = "";
+                        if (!isNaN(numericPos)) {
+                          if (numericPos === 1)       cellClass = "gold-cell";
+                          else if (numericPos === 2)  cellClass = "silver-cell";
+                          else if (numericPos === 3)  cellClass = "bronze-cell";
+                          else if (numericPos >= 4 && numericPos <= 10)
+                            cellClass = "green-cell";
+                        }
+                        // Wrap this position in a <span> with the class
+                        return `<span class="${cellClass}">${pos}</span>`;
+                      }).join("<br>");
+                  
+                      rowHTML += `<td>${cellContent}</td>`;
                     }
-                });
+                  });
     
                 // Finally, show total points
                 rowHTML += `<td>${constructorObj.TotalPoints}</td></tr>`;
