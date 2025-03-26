@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <title>F1 Session Analysis</title>
-  <!-- Link to your session_analysis.css (or adapt as needed) -->
+  <!-- Link to your CSS file -->
   <link rel="stylesheet" href="session_analysis.css" />
 </head>
 <body>
@@ -15,10 +15,8 @@
       </nav>
     </header>
 
-    <!-- Main content area that splits into two panels -->
     <div class="main-content">
-
-      <!-- Left panel for user selections, toggles, etc. -->
+      <!-- Left panel: user selections for Year, Round, Session -->
       <div class="left-panel">
         <section class="controls">
           <h2>Select a Session</h2>
@@ -49,30 +47,28 @@
           <button id="fetchSessionDataBtn">Show Session Results</button>
         </section>
 
-        <hr />
+        <!-- New: Driver Filter Section (initially hidden) -->
+        <section id="driverFilterSection" class="hidden">
+          <h2>Driver Filter (2–4 drivers)</h2>
+          <label>
+            <input type="checkbox" id="enableDriverFilter" />
+            Enable Driver Filter
+          </label>
 
-        <!-- Toggle for comparison mode -->
-        <section class="comparison-toggle">
-          <h2>Driver Comparison</h2>
-          <label for="compareModeCheckbox">Enable Comparison Mode (2-4 drivers):</label>
-          <input type="checkbox" id="compareModeCheckbox" />
-        </section>
-
-        <!-- Driver comparison list (shown only if comparison mode is checked) -->
-        <section id="driverComparisonSection" class="hidden">
-          <label for="driverSelect">Select Drivers:</label>
-          <select id="driverSelect" multiple size="6">
-            <!-- Populated dynamically via JS -->
-          </select>
-          <!-- It's labeled "Apply Filter" so it's more intuitive -->
-          <button id="compareDriversBtn">Apply Filter</button>
+          <div id="filterControls" class="hidden">
+            <label for="driverMultiSelect">Select Drivers:</label>
+            <select id="driverMultiSelect" multiple size="6">
+              <!-- Options populated dynamically -->
+            </select>
+            <button id="applyFilterBtn">Apply Filter</button>
+          </div>
         </section>
       </div>
 
-      <!-- Right panel for displaying session or comparison results -->
+      <!-- Right panel: session results -->
       <div class="right-panel">
         <div class="result-container" id="resultsContainer">
-          <!-- The JavaScript will inject tables/results here -->
+          <!-- Results will be injected here by JS -->
         </div>
       </div>
     </div>
@@ -82,7 +78,7 @@
     </footer>
   </div>
 
-  <!-- Include your separate JavaScript file at the bottom -->
+  <!-- Link your script at the end -->
   <script src="session_analysis.js"></script>
 </body>
 </html>

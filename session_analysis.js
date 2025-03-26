@@ -1,23 +1,29 @@
+// DOM references for session selection
 const yearSelect = document.getElementById('yearSelect');
 const roundSelect = document.getElementById('roundSelect');
 const sessionSelect = document.getElementById('sessionSelect');
 const fetchSessionDataBtn = document.getElementById('fetchSessionDataBtn');
-
-const compareModeCheckbox = document.getElementById('compareModeCheckbox');
-const driverComparisonSection = document.getElementById('driverComparisonSection');
-const driverSelect = document.getElementById('driverSelect');
-const compareDriversBtn = document.getElementById('compareDriversBtn');
 const resultsContainer = document.getElementById('resultsContainer');
 
-window.selectedDriversFilter = [];
+// DOM references for the new filter UI
+const driverFilterSection = document.getElementById('driverFilterSection');
+const enableDriverFilter = document.getElementById('enableDriverFilter');
+const filterControls = document.getElementById('filterControls');
+const driverMultiSelect = document.getElementById('driverMultiSelect');
+const applyFilterBtn = document.getElementById('applyFilterBtn');
+
+// Keep track of the last session type and full results
+let lastSessionType = null; 
+let lastResultsData = null; 
 
 // 1. Load available seasons on page load
 window.addEventListener('DOMContentLoaded', async () => {
   try {
     const res = await fetch('/api/f1/seasons.json');
     const data = await res.json();
-    const seasons = data.MRData.SeasonTable.Seasons;
+    const seasons = data.MRData.SeasonTable.Seasons || [];
 
+    // Populate the yearSelect
     yearSelect.innerHTML = '<option value="" selected>Select a year</option>';
     seasons.forEach(seasonObj => {
       const opt = document.createElement('option');
@@ -27,6 +33,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     });
   } catch (err) {
     console.error('Error fetching seasons:', err);
+    resultsContainer.innerHTML = '<p class="error">Failed to load seasons.</p>';
   }
 });
 
@@ -57,7 +64,7 @@ yearSelect.addEventListener('change', async () => {
   }
 });
 
-// 3. Fetch session data (race, qualifying, sprint)
+// 3. Fetch session data (Race, Qualifying, or Sprint) when button is clicked
 fetchSessionDataBtn.addEventListener('click', async () => {
   const chosenYear = yearSelect.value;
   const chosenRound = roundSelect.value;
@@ -68,150 +75,259 @@ fetchSessionDataBtn.addEventListener('click', async () => {
     return;
   }
 
-  const fetchUrl = `/api/f1/${chosenYear}/${chosenRound}/${sessionType}.json`;
-
   resultsContainer.innerHTML = `<p>Loading ${sessionType} data for ${chosenYear}, round ${chosenRound}...</p>`;
+
+  let fetchUrl = '';
+  if (sessionType === 'race') {
+    fetchUrl = `/api/f1/${chosenYear}/${chosenRound}/results.json`;
+  } else if (sessionType === 'qualifying') {
+    fetchUrl = `/api/f1/${chosenYear}/${chosenRound}/qualifying.json`;
+  } else if (sessionType === 'sprint') {
+    fetchUrl = `/api/f1/${chosenYear}/${chosenRound}/sprint.json`;
+  } else {
+    resultsContainer.innerHTML = '<p class="error">Unknown session type selected.</p>';
+    return;
+  }
 
   try {
     const response = await fetch(fetchUrl);
     if (!response.ok) {
-      resultsContainer.innerHTML = `<p class="error">No data found for ${sessionType} (HTTP ${response.status}).</p>`;
+      resultsContainer.innerHTML = `<p class="error">No data found (HTTP ${response.status}).</p>`;
       return;
     }
 
     const data = await response.json();
-    if (sessionType === 'race') displayRaceResults(data);
-    else if (sessionType === 'qualifying') displayQualifyingResults(data);
-    else if (sessionType === 'sprint') displaySprintResults(data);
-    else resultsContainer.innerHTML = `<p class="error">Unknown session type.</p>`;
+    if (sessionType === 'race') {
+      displayRaceResults(data);
+    } else if (sessionType === 'qualifying') {
+      displayQualifyingResults(data);
+    } else if (sessionType === 'sprint') {
+      displaySprintResults(data);
+    }
+
+    // Reveal the filter UI now that results are loaded.
+    driverFilterSection.classList.remove('hidden');
+    // Reset the toggle each time fresh results are fetched
+    enableDriverFilter.checked = false;
+    filterControls.classList.add('hidden');
+
   } catch (err) {
     console.error('Error fetching session data:', err);
     resultsContainer.innerHTML = `<p class="error">Error loading ${sessionType} results.</p>`;
   }
 });
 
-// 4. Toggle comparison mode
-compareModeCheckbox.addEventListener('change', async () => {
-  if (compareModeCheckbox.checked) {
-    driverComparisonSection.classList.remove('hidden');
-    await loadDriversForSeason();
-  } else {
-    driverComparisonSection.classList.add('hidden');
-    window.selectedDriversFilter = [];
-    fetchSessionDataBtn.click(); // reload full results
-  }
-});
-
-// Load drivers for the chosen season
-async function loadDriversForSeason() {
-  const chosenYear = yearSelect.value;
-  if (!chosenYear) {
-    alert('Please select a season first to load drivers.');
-    compareModeCheckbox.checked = false;
-    driverComparisonSection.classList.add('hidden');
-    return;
-  }
-
-  try {
-    const res = await fetch(`/api/f1/${chosenYear}/drivers.json`);
-    const data = await res.json();
-    const drivers = data.MRData.DriverTable.Drivers || [];
-
-    driverSelect.innerHTML = '';
-    drivers.forEach(d => {
-      const option = document.createElement('option');
-      option.value = d.driverId.toLowerCase(); // normalize to lowercase
-      option.textContent = `${d.givenName} ${d.familyName}`;
-      driverSelect.appendChild(option);
-    });
-  } catch (err) {
-    console.error('Error loading drivers for comparison:', err);
-  }
-}
-
-// 5. Apply the driver filter when "Apply Filter" is clicked
-compareDriversBtn.addEventListener('click', () => {
-  const selectedOptions = Array.from(driverSelect.selectedOptions).map(opt => opt.value.toLowerCase());
-  if (selectedOptions.length < 2 || selectedOptions.length > 4) {
-    alert('Please select between 2 and 4 drivers for comparison.');
-    return;
-  }
-
-  window.selectedDriversFilter = selectedOptions;
-  fetchSessionDataBtn.click();
-});
-
-// Display race results with filter
 function displayRaceResults(apiData) {
-  let resultArray = apiData?.MRData?.RaceTable?.Races[0]?.Results || [];
-
-  console.log("Returned driverIds:", resultArray.map(r => r.Driver.driverId));
-  console.log("Selected filter:", window.selectedDriversFilter);
-
-  if (compareModeCheckbox.checked && window.selectedDriversFilter.length > 0) {
-    resultArray = resultArray.filter(res =>
-      window.selectedDriversFilter.includes(res.Driver.driverId.toLowerCase())
-    );
-  }
-  renderTable(resultArray, "Race Results");
-}
-
-// Display qualifying results with filter
-function displayQualifyingResults(apiData) {
-  let resultArray = apiData?.MRData?.QualifyingTable?.Races[0]?.QualifyingResults || [];
-
-  if (compareModeCheckbox.checked && window.selectedDriversFilter.length > 0) {
-    resultArray = resultArray.filter(res =>
-      window.selectedDriversFilter.includes(res.Driver.driverId.toLowerCase())
-    );
-  }
-  renderTable(resultArray, "Qualifying Results");
-}
-
-// Display sprint results with filter
-function displaySprintResults(apiData) {
-  let resultArray = apiData?.MRData?.SprintTable?.Races[0]?.SprintResults || [];
-
-  if (compareModeCheckbox.checked && window.selectedDriversFilter.length > 0) {
-    resultArray = resultArray.filter(res =>
-      window.selectedDriversFilter.includes(res.Driver.driverId.toLowerCase())
-    );
-  }
-  renderTable(resultArray, "Sprint Results");
-}
-
-// Re-usable function that renders a simple table
-function renderTable(results, title) {
-  if (!results.length) {
-    resultsContainer.innerHTML = `<p>No results available.</p>`;
+  const raceTable = apiData?.MRData?.RaceTable;
+  if (!raceTable || !raceTable.Races || !raceTable.Races.length) {
+    resultsContainer.innerHTML = '<p>No race data found for this round.</p>';
     return;
   }
 
-  let html = `<h2>${title}</h2>
-    <table class="results-table">
-      <thead>
-        <tr>
-          <th>Pos</th>
-          <th>Driver</th>
-          <th>Constructor</th>
-          <th>Points</th>
-          <th>Status</th>
-        </tr>
-      </thead>
-      <tbody>`;
+  const resultArray = raceTable.Races[0]?.Results || [];
+  if (!resultArray.length) {
+    resultsContainer.innerHTML = '<p>No race results available.</p>';
+    return;
+  }
 
-  results.forEach(res => {
-    const driverName = `${res.Driver.givenName} ${res.Driver.familyName}`;
-    html += `
-      <tr>
-        <td>${res.position}</td>
-        <td>${driverName}</td>
-        <td>${res.Constructor.name}</td>
-        <td>${res.points}</td>
-        <td>${res.status}</td>
-      </tr>`;
-  });
-  html += `</tbody></table>`;
+  // Store results for possible filtering
+  lastResultsData = resultArray;
+  lastSessionType = 'race';
+
+  // Initial render of the full, unfiltered table
+  renderResultsTable(resultArray, 'race');
+
+  // Populate the multi-select for driver filtering
+  populateDriverMultiSelect(resultArray);
+}
+
+function displayQualifyingResults(apiData) {
+  const qualTable = apiData?.MRData?.QualifyingTable;
+  if (!qualTable || !qualTable.Races || !qualTable.Races.length) {
+    resultsContainer.innerHTML = '<p>No qualifying data found for this round.</p>';
+    return;
+  }
+
+  const resultArray = qualTable.Races[0]?.QualifyingResults || [];
+  if (!resultArray.length) {
+    resultsContainer.innerHTML = '<p>No qualifying results available.</p>';
+    return;
+  }
+
+  lastResultsData = resultArray;
+  lastSessionType = 'qualifying';
+
+  renderResultsTable(resultArray, 'qualifying');
+  populateDriverMultiSelect(resultArray);
+}
+
+function displaySprintResults(apiData) {
+  const sprintTable = apiData?.MRData?.SprintTable;
+  if (!sprintTable || !sprintTable.Races || !sprintTable.Races.length) {
+    resultsContainer.innerHTML = '<p>No sprint data found for this round.</p>';
+    return;
+  }
+
+  const resultArray = sprintTable.Races[0]?.SprintResults || [];
+  if (!resultArray.length) {
+    resultsContainer.innerHTML = '<p>No sprint results available.</p>';
+    return;
+  }
+
+  lastResultsData = resultArray;
+  lastSessionType = 'sprint';
+
+  renderResultsTable(resultArray, 'sprint');
+  populateDriverMultiSelect(resultArray);
+}
+
+function renderResultsTable(dataArray, sessionType) {
+  if (!dataArray || !dataArray.length) {
+    resultsContainer.innerHTML = '<p>No results to display.</p>';
+    return;
+  }
+
+  let html = '';
+
+  if (sessionType === 'race') {
+    html = `
+      <table class="results-table">
+        <thead>
+          <tr>
+            <th>Pos</th>
+            <th>Driver</th>
+            <th>Constructor</th>
+            <th>Points</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+    `;
+    dataArray.forEach(res => {
+      const driverName = `${res.Driver.givenName} ${res.Driver.familyName}`;
+      html += `
+        <tr>
+          <td>${res.position}</td>
+          <td>${driverName}</td>
+          <td>${res.Constructor.name}</td>
+          <td>${res.points}</td>
+          <td>${res.status}</td>
+        </tr>
+      `;
+    });
+    html += '</tbody></table>';
+  }
+  else if (sessionType === 'qualifying') {
+    html = `
+      <table class="results-table">
+        <thead>
+          <tr>
+            <th>Pos</th>
+            <th>Driver</th>
+            <th>Constructor</th>
+            <th>Q1</th>
+            <th>Q2</th>
+            <th>Q3</th>
+          </tr>
+        </thead>
+        <tbody>
+    `;
+    dataArray.forEach(res => {
+      const driverName = `${res.Driver.givenName} ${res.Driver.familyName}`;
+      html += `
+        <tr>
+          <td>${res.position}</td>
+          <td>${driverName}</td>
+          <td>${res.Constructor.name}</td>
+          <td>${res.q1 || '—'}</td>
+          <td>${res.q2 || '—'}</td>
+          <td>${res.q3 || '—'}</td>
+        </tr>
+      `;
+    });
+    html += '</tbody></table>';
+  }
+  else if (sessionType === 'sprint') {
+    html = `
+      <table class="results-table">
+        <thead>
+          <tr>
+            <th>Pos</th>
+            <th>Driver</th>
+            <th>Constructor</th>
+            <th>Points</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+    `;
+    dataArray.forEach(res => {
+      const driverName = `${res.Driver.givenName} ${res.Driver.familyName}`;
+      html += `
+        <tr>
+          <td>${res.position}</td>
+          <td>${driverName}</td>
+          <td>${res.Constructor.name}</td>
+          <td>${res.points}</td>
+          <td>${res.status}</td>
+        </tr>
+      `;
+    });
+    html += '</tbody></table>';
+  }
 
   resultsContainer.innerHTML = html;
+}
+
+// Show/hide the filter controls when checkbox is toggled
+enableDriverFilter.addEventListener('change', () => {
+  if (enableDriverFilter.checked) {
+    filterControls.classList.remove('hidden');
+  } else {
+    filterControls.classList.add('hidden');
+    // Revert to showing all drivers
+    renderResultsTable(lastResultsData, lastSessionType);
+  }
+});
+
+// Apply filter when "Apply Filter" is clicked
+applyFilterBtn.addEventListener('click', () => {
+  if (!enableDriverFilter.checked) return;
+
+  // Get selected driver names
+  const selectedOptions = Array.from(driverMultiSelect.selectedOptions)
+                              .map(opt => opt.value);
+
+  // Limit 2–4 drivers
+  if (selectedOptions.length < 2 || selectedOptions.length > 4) {
+    alert('Please select between 2 and 4 drivers.');
+    return;
+  }
+
+  // Filter the stored results
+  const filtered = lastResultsData.filter(res => {
+    const name = `${res.Driver.givenName} ${res.Driver.familyName}`;
+    return selectedOptions.includes(name);
+  });
+
+  // Render the filtered subset
+  renderResultsTable(filtered, lastSessionType);
+});
+
+// Populate the multi-select with driver names from the results array
+function populateDriverMultiSelect(resultsArray) {
+  driverMultiSelect.innerHTML = '';
+
+  const uniqueDriverNames = new Set();
+  resultsArray.forEach(res => {
+    const name = `${res.Driver.givenName} ${res.Driver.familyName}`;
+    uniqueDriverNames.add(name);
+  });
+
+  uniqueDriverNames.forEach(driverName => {
+    const opt = document.createElement('option');
+    opt.value = driverName;
+    opt.textContent = driverName;
+    driverMultiSelect.appendChild(opt);
+  });
 }
