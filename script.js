@@ -1,22 +1,9 @@
-// DOM Elements
 const yearSelect = document.getElementById('year-select');
 const raceSelect = document.getElementById('race-select');
 const visualization = document.getElementById('visualization');
 
-// Function to fetch and display driver standings
-async function fetchDriverStandings(year) {
-  const API_URL = `/api/f1/${year}/driverStandings.json`;
-  try {
-    const response = await fetch(API_URL);
-    const data = await response.json();
-    return data.MRData.StandingsTable.StandingsLists[0]?.DriverStandings;
-  } catch (error) {
-    console.error('Error fetching driver standings:', error);
-    return [];
-  }
-}
+const fullAnalysisLink = document.getElementById('fullAnalysisLink');
 
-// Function to fetch and populate races for a selected year
 async function fetchRaces(year) {
   const API_URL = `/api/f1/${year}.json`;
   try {
@@ -47,7 +34,7 @@ function populateRaceDropdown(data) {
     raceSelect.appendChild(option);
   });
 
-  raceSelect.disabled = false; // Enable the dropdown
+  raceSelect.disabled = false;
 }
 
 // Function to fetch and display race results
@@ -57,7 +44,7 @@ async function fetchRaceResults(year, round) {
   try {
     const response = await fetch(raceResultsURL);
     const data = await response.json();
-    console.log("DEBUG: API Response:", data); // 🚀 Add this for debugging
+    console.log("DEBUG: API Response:", data); 
     const raceResults = data.MRData.RaceTable.Races[0];
     displayRaceResults(raceResults);
   } catch (error) {
@@ -66,10 +53,9 @@ async function fetchRaceResults(year, round) {
   }
 }
 
-// Function to display race results with points calculation
+// Function to display race results
 function displayRaceResults(race) {
-  const results = race?.Results || []; // Ensure we always have an array
-
+  const results = race?.Results || []; 
   if (results.length === 0) {
     visualization.innerHTML = `<h2>No race results found for this round.</h2>`;
     return;
@@ -83,27 +69,22 @@ function displayRaceResults(race) {
           <th>Position</th>
           <th>Driver</th>
           <th>Constructor</th>
-          <th>Time</th>
           <th>Status</th>
-          <th>Points Awarded</th>
+          <th>Points</th>
         </tr>
       </thead>
       <tbody>
   `;
 
   results.forEach((result) => {
-    const { position, points, status, Driver, Constructor, raceTime } = result;
-
-    const time = raceTime || 'N/A';
+    const { position, points, status, Driver, Constructor } = result;
     const driverName = `${Driver.givenName} ${Driver.familyName}`;
-    const constructorName = Constructor.name;
 
     table += `
       <tr>
         <td>${position || 'N/A'}</td>
         <td>${driverName}</td>
-        <td>${constructorName}</td>
-        <td>${time}</td>
+        <td>${Constructor.name}</td>
         <td>${status}</td>
         <td>${points}</td>
       </tr>
@@ -117,7 +98,7 @@ function displayRaceResults(race) {
 // Function to populate year dropdown
 function populateYearDropdown() {
   const currentYear = new Date().getFullYear();
-  const earliestYear = 1950; // Start of F1
+  const earliestYear = 1950;
 
   for (let year = currentYear; year >= earliestYear; year--) {
     const option = document.createElement('option');
@@ -126,19 +107,15 @@ function populateYearDropdown() {
     yearSelect.appendChild(option);
   }
 
-  // Set the default year to the current year
-  yearSelect.value = currentYear;
-
-  // Fetch data for the default year
-  fetchDriverStandings(currentYear);
-  fetchRaces(currentYear);
+  // set the default year
+  yearSelect.value = 2024;
+  fetchRaces(2024); // optionally auto-load
 }
 
 // Event Listeners
 yearSelect.addEventListener('change', (event) => {
   const selectedYear = event.target.value;
   visualization.innerHTML = `<h2>Loading...</h2>`;
-  fetchDriverStandings(selectedYear);
   fetchRaces(selectedYear);
 });
 
@@ -147,6 +124,9 @@ raceSelect.addEventListener('change', (event) => {
   const selectedYear = yearSelect.value;
 
   if (selectedRound) {
+    // Update link for Full Race Analysis
+    fullAnalysisLink.href = `full_race_analysis.html?season=${selectedYear}&round=${selectedRound}`;
+
     visualization.innerHTML = `<h2>Loading...</h2>`;
     fetchRaceResults(selectedYear, selectedRound);
   }

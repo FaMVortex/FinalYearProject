@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Full Race Analysis</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="full_race_analysis.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <header class="analysis-header">
+    <h1>Full Race Analysis</h1>
+    <nav class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="race_results.html">Race Results</a>
+    </nav>
+  </header>
+
+  <div class="analysis-wrapper">
+    <!-- The user can STILL pick year/round on this page -->
+    <section id="analysis-controls">
+      <h2>Select Race for Analysis</h2>
+      <div class="form-row">
+        <label for="analysisSeason">Season:</label>
+        <select id="analysisSeason"></select>
+      </div>
+
+      <div class="form-row">
+        <label for="analysisRound">Round:</label>
+        <select id="analysisRound" disabled></select>
+      </div>
+
+      <button id="loadAnalysisBtn" class="analysis-button">Load Analysis</button>
+    </section>
+
+    <!-- Race Results Table -->
+    <section id="analysisResults">
+      <h2>Race Results</h2>
+      <div id="analysisResultsTable" class="analysis-card">Loading...</div>
+    </section>
+
+    <!-- Lap Times Chart -->
+    <section id="lapTimesChartSection">
+      <h2>Lap Times Chart</h2>
+      <p class="subtitle">Toggle drivers on/off (Top 3 shown by default):</p>
+      <div id="driverToggles" class="toggles-container">Loading lap times...</div>
+      <div class="chart-container">
+        <canvas id="lapTimesChart"></canvas>
+      </div>
+    </section>
+
+    <!-- Start vs Finish Section -->
+    <section id="startFinishSection">
+      <h2>Start vs. Finish</h2>
+      <div id="startFinishTable" class="analysis-card">
+        Select a year & round, then click "Load Analysis."
+      </div>
+    </section>
+  </div>
+
+  <footer>
+    <p>&copy; 2025 F1 Data Visualization. All rights reserved.</p>
+  </footer>
+
+  <script src="full_race_analysis.js"></script>
+</body>
+</html>
