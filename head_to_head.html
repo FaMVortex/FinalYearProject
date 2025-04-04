@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Driver Head-to-Head Comparison</title>
+  <link rel="stylesheet" href="style2.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="wrapper">
+    <header>
+      <h1>Round-by-Round Head-to-Head</h1>
+      <nav class="nav-links">
+        <a href="index.html">Home</a>
+        <a href="compare_drivers.html">Back to Driver Comparison</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="selection-container">
+        <h2>Select Season & Two Drivers</h2>
+        <div>
+          <label for="seasonSelect">Season:</label>
+          <select id="seasonSelect"></select>
+        </div>
+        <div>
+          <label for="driverASelect">Driver A:</label>
+          <select id="driverASelect"></select>
+        </div>
+        <div>
+          <label for="driverBSelect">Driver B:</label>
+          <select id="driverBSelect"></select>
+        </div>
+        <button id="loadH2HBtn">Load Head-to-Head</button>
+      </section>
+
+      <section class="guide-container">
+        <h3>Round-by-Round Breakdown</h3>
+        <div id="h2hResults">No data yet. Pick drivers and click the button.</div>
+      </section>
+
+      <section class="chart-container" style="display:none;" id="roundChartSection">
+        <canvas id="h2hChart"></canvas>
+      </section>
+    </main>
+  </div>
+
+  <footer>
+    <p>&copy; 2025 F1 Data Visualization. All rights reserved.</p>
+  </footer>
+
+  <script src="head_to_head.js"></script>
+</body>
+</html>
