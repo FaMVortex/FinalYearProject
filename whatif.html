@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>F1 "What If" Scenario</title>
+  <link rel="stylesheet" href="whatif.css" />
+</head>
+<body>
+  <div class="analysis-header">
+    <h1>F1 "What If" Page</h1>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="full_race_analysis.html">Full Race Analysis</a>
+      <a href="whatif.html">What If</a>
+    </div>
+  </div>
+
+  <div class="analysis-wrapper">
+
+    <div id="analysis-controls">
+      <h2>Create & Configure Your Scenario</h2>
+
+      <label for="seasonSelect">Choose a season:</label>
+      <select id="seasonSelect"></select>
+      <button class="analysis-button" id="btnCreateScenario">Create Scenario</button>
+
+      <p id="scenarioStatus"></p>
+    </div>
+
+    <div id="raceList" class="analysis-card">
+    </div>
+
+    <h3>Race Results Editor</h3>
+    <div id="raceEditor" class="analysis-card">
+    </div>
+
+    <div>
+      <button class="analysis-button" id="btnGetDriverStandings">Show Scenario Driver Standings</button>
+      <button class="analysis-button" id="btnGetConstructorStandings">Show Scenario Constructor Standings</button>
+    </div>
+    <div id="standingsDisplay" class="analysis-card">
+    </div>
+  </div>
+
+  <footer>
+    <p>&copy; 2025 My F1 Data Project</p>
+  </footer>
+
+  <script src="whatif.js"></script>
+</body>
+</html>
