@@ -9,7 +9,6 @@ document.addEventListener("DOMContentLoaded", () => {
             const data = await response.json();
             const seasons = data.MRData.SeasonTable.Seasons;
 
-            // Populate dropdown with all seasons
             seasons.forEach(season => {
                 let option = document.createElement("option");
                 option.value = season.season;
@@ -17,7 +16,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 seasonSelect.appendChild(option);
             });
 
-            // Load the current season's constructor standings by default
             loadStandings(seasonSelect.value);
         } catch (error) {
             console.error("Error fetching seasons:", error);
@@ -28,14 +26,12 @@ document.addEventListener("DOMContentLoaded", () => {
         standingsBody.innerHTML = "<tr><td colspan='3'>Loading...</td></tr>";
     
         try {
-            // Fetch the constructor results for the entire season
             const response = await fetch(`/api/f1/${season}/constructorResultsTable.json`);
             const data = await response.json();
     
-            const raceOrder = data.MRData.StandingsTable.Races; // { roundNumber: raceName, ... }
-            const standings = data.MRData.StandingsTable.ConstructorResults; // sorted array
+            const raceOrder = data.MRData.StandingsTable.Races; 
+            const standings = data.MRData.StandingsTable.ConstructorResults; 
     
-            // 1) Build the table header (Position | Constructor | for each race | Points)
             let headerRow = `<tr><th>Position</th><th>Constructor</th>`;
             Object.values(raceOrder).forEach(raceName => {
                 headerRow += `<th>${raceName}</th>`;
@@ -43,38 +39,50 @@ document.addEventListener("DOMContentLoaded", () => {
             headerRow += `<th>Points</th></tr>`;
             standingsTable.innerHTML = headerRow;
     
-            // 2) Build the standings table rows
             standingsBody.innerHTML = "";
             standings.forEach((constructorObj, index) => {
                 let rowHTML = `<tr><td>${index + 1}</td>`;
                 rowHTML += `<td>${constructorObj.Constructor.name}</td>`;
     
-                // For each round, constructorObj.Races[round] is an array of positions
                 Object.keys(raceOrder).forEach(round => {
                     const positionsArray = constructorObj.Races[round] || [];
+
                     if (positionsArray.length === 0) {
-                      rowHTML += `<td>-</td>`;
+                        rowHTML += `<td>-</td>`;
                     } else {
-                      // Build a string with each position wrapped in a <span> that’s conditionally highlighted
-                      const cellContent = positionsArray.map(pos => {
-                        let numericPos = parseInt(pos, 10);
-                        let cellClass = "";
-                        if (!isNaN(numericPos)) {
-                          if (numericPos === 1)       cellClass = "gold-cell";
-                          else if (numericPos === 2)  cellClass = "silver-cell";
-                          else if (numericPos === 3)  cellClass = "bronze-cell";
-                          else if (numericPos >= 4 && numericPos <= 10)
-                            cellClass = "green-cell";
-                        }
-                        // Wrap this position in a <span> with the class
-                        return `<span class="${cellClass}">${pos}</span>`;
-                      }).join("<br>");
-                  
-                      rowHTML += `<td>${cellContent}</td>`;
+                        let highlightClass = "";
+                        let cellText = positionsArray.join("<br>");
+
+                        positionsArray.forEach(pos => {
+                            const numericPos = parseInt(pos, 10);
+                            if (!isNaN(numericPos)) {
+                                if (numericPos === 1 && highlightClass !== "gold-cell") {
+                                    highlightClass = "gold-cell";
+                                } else if (
+                                    numericPos === 2 &&
+                                    highlightClass !== "gold-cell" &&
+                                    highlightClass !== "silver-cell"
+                                ) {
+                                    highlightClass = "silver-cell";
+                                } else if (
+                                    numericPos === 3 &&
+                                    !["gold-cell", "silver-cell", "bronze-cell"].includes(highlightClass)
+                                ) {
+                                    highlightClass = "bronze-cell";
+                                } else if (
+                                    numericPos >= 4 &&
+                                    numericPos <= 10 &&
+                                    !["gold-cell", "silver-cell", "bronze-cell", "green-cell"].includes(highlightClass)
+                                ) {
+                                    highlightClass = "green-cell";
+                                }
+                            }
+                        });
+
+                        rowHTML += `<td class="${highlightClass}">${cellText}</td>`;
                     }
-                  });
+                });
     
-                // Finally, show total points
                 rowHTML += `<td>${constructorObj.TotalPoints}</td></tr>`;
                 standingsBody.innerHTML += rowHTML;
             });
@@ -85,9 +93,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // When season changes, reload that season’s constructor standings
     seasonSelect.addEventListener("change", () => loadStandings(seasonSelect.value));
 
-    // Fetch seasons on page load
     loadSeasons();
 });
