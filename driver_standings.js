@@ -1,78 +1,114 @@
 document.addEventListener("DOMContentLoaded", () => {
-    const seasonSelect = document.getElementById("season");
-    const standingsBody = document.getElementById("standings-body");
+    const seasonSelect   = document.getElementById("season");
+    const standingsBody  = document.getElementById("standings-body");
     const standingsTable = document.querySelector(".standings-container table thead");
+
+    // AI UI elements
+    const aiButton       = document.getElementById("ai-button");
+    const aiModal        = document.getElementById("ai-modal");
+    const closeAIModal   = document.getElementById("close-ai-modal");
+    const presetSelect   = document.getElementById("preset-queries");
+    const aiQueryInput   = document.getElementById("ai-query");
+    const sendAIQuery    = document.getElementById("send-ai-query");
+    const aiResponseDiv  = document.getElementById("ai-response");
+
+    let raceOrder     = null;
+    let standingsData = null;
 
     async function loadSeasons() {
         try {
-            const response = await fetch("/api/f1/seasons.json");
-            const data = await response.json();
-            const seasons = data.MRData.SeasonTable.Seasons;
-
-            seasons.forEach(season => {
-                let option = document.createElement("option");
-                option.value = season.season;
-                option.textContent = season.season;
-                seasonSelect.appendChild(option);
+            const res  = await fetch("/api/f1/seasons.json");
+            const data = await res.json();
+            data.MRData.SeasonTable.Seasons.forEach(s => {
+                const o = document.createElement("option");
+                o.value = s.season;
+                o.textContent = s.season;
+                seasonSelect.appendChild(o);
             });
             loadStandings(seasonSelect.value);
-        } catch (error) {
-            console.error("Error fetching seasons:", error);
+        } catch (e) {
+            console.error("Error fetching seasons:", e);
         }
     }
 
     async function loadStandings(season) {
         standingsBody.innerHTML = "<tr><td colspan='3'>Loading...</td></tr>";
-
         try {
-            const response = await fetch(`/api/f1/${season}/driverResultsTable.json`);
-            const data = await response.json();
-            const raceOrder = data.MRData.StandingsTable.Races;
-            const standings = data.MRData.StandingsTable.DriverResults;
+            const res  = await fetch(`/api/f1/${season}/driverResultsTable.json`);
+            const json = await res.json();
+            raceOrder     = json.MRData.StandingsTable.Races;
+            standingsData = json.MRData.StandingsTable.DriverResults;
 
-            // Update table headers
-            let headerRow = `<tr><th>Position</th><th>Driver</th>`;
-            Object.values(raceOrder).forEach(raceName => {
-                headerRow += `<th>${raceName}</th>`;
-            });
-            headerRow += `<th>Points</th></tr>`;
-            standingsTable.innerHTML = headerRow;
+            // headers
+            let hdr = `<tr><th>Position</th><th>Driver</th>`;
+            Object.values(raceOrder).forEach(r => hdr += `<th>${r}</th>`);
+            hdr += `<th>Points</th></tr>`;
+            standingsTable.innerHTML = hdr;
 
-            // Update driver standings
             standingsBody.innerHTML = "";
-            standings.forEach((driver, index) => {
-                let row = `<tr><td>${index + 1}</td>`;
-                row += `<td>${driver.Driver.givenName} ${driver.Driver.familyName}</td>`;
-
-                Object.keys(raceOrder).forEach(round => {
-                    let position = driver.Races[round] || "-";
-                    let numericPos = parseInt(position, 10);  // parse “1”, “2”, “3”, etc.
-                
-                    let cellClass = "";
-                    // Only highlight if it's a valid number
-                    if (!isNaN(numericPos)) {
-                      if (numericPos === 1)       cellClass = "gold-cell";
-                      else if (numericPos === 2)  cellClass = "silver-cell";
-                      else if (numericPos === 3)  cellClass = "bronze-cell";
-                      else if (numericPos >= 4 && numericPos <= 10)
-                        cellClass = "green-cell";
-                      // Else no highlight
+            standingsData.forEach((d, i) => {
+                let row = `<tr><td>${i+1}</td><td>${d.Driver.givenName} ${d.Driver.familyName}</td>`;
+                Object.keys(raceOrder).forEach(rnd => {
+                    const p = d.Races[rnd]||"-";
+                    const n = parseInt(p,10);
+                    let cls="";
+                    if (!isNaN(n)) {
+                        if      (n===1) cls="gold-cell";
+                        else if (n===2) cls="silver-cell";
+                        else if (n===3) cls="bronze-cell";
+                        else if (n>=4&&n<=10) cls="green-cell";
                     }
-                
-                    // Insert the cell with the class (if any)
-                    row += `<td class="${cellClass}">${position}</td>`;
+                    row += `<td class="${cls}">${p}</td>`;
                 });
-
-                row += `<td>${driver.TotalPoints}</td></tr>`;
+                row += `<td>${d.TotalPoints}</td></tr>`;
                 standingsBody.innerHTML += row;
             });
-
-        } catch (error) {
-            console.error("Error fetching driver standings:", error);
+        } catch (e) {
+            console.error("Error fetching driver standings:", e);
             standingsBody.innerHTML = "<tr><td colspan='3'>Failed to load standings.</td></tr>";
         }
     }
 
     seasonSelect.addEventListener("change", () => loadStandings(seasonSelect.value));
+
+    // AI modal
+    aiButton.addEventListener("click", () => {
+        aiModal.style.display = "block";
+        aiQueryInput.value = "";
+        aiResponseDiv.textContent = "";
+        presetSelect.value = "";
+    });
+    closeAIModal.addEventListener("click", e => { e.preventDefault(); aiModal.style.display = "none"; });
+    window.addEventListener("click", e => { if (e.target===aiModal) aiModal.style.display="none"; });
+
+    // preset dropdown
+    presetSelect.addEventListener("change", () => {
+        aiQueryInput.value = presetSelect.value;
+    });
+
+    sendAIQuery.addEventListener("click", async () => {
+        const q = aiQueryInput.value.trim();
+        if (!q) return;
+        aiResponseDiv.textContent = "Loading…";
+        try {
+            const payload = {
+                season: seasonSelect.value,
+                type:   "driver",
+                query:  q,
+                data:   { raceOrder, standings: standingsData }
+            };
+            const res = await fetch("/api/ai/insights", {
+                method: "POST",
+                headers: {"Content-Type":"application/json"},
+                body: JSON.stringify(payload)
+            });
+            const rj = await res.json();
+            aiResponseDiv.textContent = rj.response;
+        } catch (e) {
+            console.error(e);
+            aiResponseDiv.textContent = "Error fetching AI insights.";
+        }
+    });
+
     loadSeasons();
 });

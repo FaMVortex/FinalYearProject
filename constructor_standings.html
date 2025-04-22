@@ -23,6 +23,7 @@
                 <h2>Select a Season</h2>
                 <label for="season">Season:</label>
                 <select id="season"></select>
+                <button id="ai-button">AI Insights</button>
             </section>
 
             <section class="standings-container">
@@ -43,9 +44,22 @@
         </main>
     </div>
 
-    <footer>
-        <p>&copy; 2025 F1 Data Visualization. All rights reserved.</p>
-    </footer>
+    <!-- AI Insights Modal -->
+    <div id="ai-modal" class="modal">
+      <div class="modal-content">
+        <a href="#" class="close-modal" id="close-ai-modal">&times;</a>
+        <h3>AI Insights</h3>
+        <label for="preset-queries">Quick Questions:</label>
+        <select id="preset-queries">
+          <option value="">— Select a question —</option>
+          <option value="Tell me why the season ended with these results.">Tell me why the season ended with these results</option>
+          <option value="Based on the results of this season, how may next year pan out?">Based on the results of this season, how may next year pan out</option>
+        </select>
+        <textarea id="ai-query" rows="4" style="width:100%;" placeholder="Or ask your own question…"></textarea>
+        <button id="send-ai-query">Send</button>
+        <div id="ai-response" style="margin-top:15px; text-align:left; white-space: pre-wrap;"></div>
+      </div>
+    </div>
 
     <script src="constructor_standings.js"></script>
 </body>
