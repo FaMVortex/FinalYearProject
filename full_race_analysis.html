@@ -3,7 +3,6 @@
 <head>
   <meta charset="UTF-8">
   <title>Full Race Analysis</title>
-  <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="full_race_analysis.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
@@ -17,29 +16,25 @@
   </header>
 
   <div class="analysis-wrapper">
-    <!-- The user can STILL pick year/round on this page -->
     <section id="analysis-controls">
       <h2>Select Race for Analysis</h2>
       <div class="form-row">
         <label for="analysisSeason">Season:</label>
         <select id="analysisSeason"></select>
       </div>
-
       <div class="form-row">
         <label for="analysisRound">Round:</label>
         <select id="analysisRound" disabled></select>
       </div>
-
       <button id="loadAnalysisBtn" class="analysis-button">Load Analysis</button>
+      <button id="aiInsightsBtn" class="analysis-button">AI Insights</button>
     </section>
 
-    <!-- Race Results Table -->
     <section id="analysisResults">
       <h2>Race Results</h2>
       <div id="analysisResultsTable" class="analysis-card">Loading...</div>
     </section>
 
-    <!-- Lap Times Chart -->
     <section id="lapTimesChartSection">
       <h2>Lap Times Chart</h2>
       <p class="subtitle">Toggle drivers on/off (Top 3 shown by default):</p>
@@ -49,13 +44,28 @@
       </div>
     </section>
 
-    <!-- Start vs Finish Section -->
     <section id="startFinishSection">
       <h2>Start vs. Finish</h2>
       <div id="startFinishTable" class="analysis-card">
-        Select a year & round, then click "Load Analysis."
+        Select a year &amp; round, then click "Load Analysis."
       </div>
     </section>
+  </div>
+
+  <div id="ai-modal" class="modal">
+    <div class="modal-content">
+      <a href="#" class="close-modal" id="close-ai-modal">&times;</a>
+      <h3>AI Insights</h3>
+      <label for="preset-queries">Quick Questions:</label>
+      <select id="preset-queries">
+        <option value="">— Select a question —</option>
+        <option value="What was the key turning point in this race?">What was the key turning point in this race?</option>
+        <option value="Which driver over- or under-performed relative to their qualifying?">Which driver over- or under-performed relative to their qualifying?</option>
+      </select>
+      <textarea id="ai-query" rows="4" placeholder="Or ask your own question…"></textarea>
+      <button id="send-ai-query">Send</button>
+      <div id="ai-response" style="margin-top:15px; text-align:left; white-space: pre-wrap; color: #FFFFFF; max-height: 400px; overflow-y: auto;"></div>
+    </div>
   </div>
 
   <footer>

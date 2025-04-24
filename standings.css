@@ -178,9 +178,7 @@ footer {
     color: black;
 }
 
-/* --- Modal & AI Button Restyling --- */
 
-/* Hide default modal style */
 .modal {
     display: none;
     position: fixed;

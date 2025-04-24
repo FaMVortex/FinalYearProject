@@ -217,3 +217,95 @@ footer {
     height: 300px; /* reduce chart height for smaller screens */
   }
 }
+
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0,0,0,0.7);  /* darker backdrop */
+}
+
+/* Match site panels */
+.modal-content {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  margin: 8% auto;
+  padding: 20px;
+  width: 85%;
+  max-width: 600px;
+  border-radius: 10px;
+  border: 2px solid #ffcc00;
+  box-shadow: 0 4px 15px rgba(255, 255, 255, 0.1);
+  text-align: left;
+}
+
+/* Close “×” */
+.close-modal {
+  color: white;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  text-decoration: none;
+}
+.close-modal:hover,
+.close-modal:focus {
+  color: #ffcc00;
+  cursor: pointer;
+}
+
+/* AI button in page header */
+#ai-button {
+  background: #ff5733;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  font-size: 1rem;
+  margin-top: 10px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+#ai-button:hover {
+  background: #ff7849;
+}
+
+/* “Send” button inside modal */
+#send-ai-query {
+  background: #ff5733;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  font-size: 1rem;
+  margin-top: 10px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+#send-ai-query:hover {
+  background: #ff7849;
+}
+
+/* Quick‑questions dropdown & textarea styling */
+#preset-queries,
+#ai-query {
+  width: 100%;
+  padding: 10px;
+  margin-top: 8px;
+  margin-bottom: 12px;
+  border: 2px solid #ffcc00;
+  border-radius: 5px;
+  background: #fff;
+  color: black;
+  font-size: 1rem;
+  outline: none;
+  transition: border 0.2s ease;
+}
+#preset-queries:focus,
+#ai-query:focus {
+  border-color: #ff7849;
+}
