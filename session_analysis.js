@@ -12,9 +12,19 @@ const filterControls = document.getElementById('filterControls');
 const driverMultiSelect = document.getElementById('driverMultiSelect');
 const applyFilterBtn = document.getElementById('applyFilterBtn');
 
+const aiButton = document.getElementById('ai-button');
+const aiModal = document.getElementById('ai-modal');
+const closeAIModal = document.getElementById('close-ai-modal');
+const presetQueries = document.getElementById('preset-queries');
+const aiQueryInput = document.getElementById('ai-query');
+const sendAIQuery = document.getElementById('send-ai-query');
+const aiResponseDiv = document.getElementById('ai-response');
+
+
 // Keep track of the last session type and full results
 let lastSessionType = null; 
 let lastResultsData = null; 
+let lastYear = null, lastRound = null;
 
 // 1. Load available seasons on page load
 window.addEventListener('DOMContentLoaded', async () => {
@@ -75,6 +85,13 @@ fetchSessionDataBtn.addEventListener('click', async () => {
     return;
   }
 
+  lastYear  = chosenYear;
+  lastRound = chosenRound;
+
+  aiButton.style.display='none';
+
+  driverFilterSection.classList.add('hidden');
+
   resultsContainer.innerHTML = `<p>Loading ${sessionType} data for ${chosenYear}, round ${chosenRound}...</p>`;
 
   let fetchUrl = '';
@@ -117,6 +134,11 @@ fetchSessionDataBtn.addEventListener('click', async () => {
   }
 });
 
+function onResultsRendered(){
+  driverFilterSection.classList.remove('hidden');
+  aiButton.style.display='block';   
+}
+
 function displayRaceResults(apiData) {
   const raceTable = apiData?.MRData?.RaceTable;
   if (!raceTable || !raceTable.Races || !raceTable.Races.length) {
@@ -139,6 +161,8 @@ function displayRaceResults(apiData) {
 
   // Populate the multi-select for driver filtering
   populateDriverMultiSelect(resultArray);
+
+  onResultsRendered();
 }
 
 function displayQualifyingResults(apiData) {
@@ -159,6 +183,8 @@ function displayQualifyingResults(apiData) {
 
   renderResultsTable(resultArray, 'qualifying');
   populateDriverMultiSelect(resultArray);
+
+  onResultsRendered();
 }
 
 function displaySprintResults(apiData) {
@@ -179,6 +205,8 @@ function displaySprintResults(apiData) {
 
   renderResultsTable(resultArray, 'sprint');
   populateDriverMultiSelect(resultArray);
+
+  onResultsRendered();
 }
 
 function renderResultsTable(dataArray, sessionType) {
@@ -330,4 +358,45 @@ function populateDriverMultiSelect(resultsArray) {
     opt.textContent = driverName;
     driverMultiSelect.appendChild(opt);
   });
+
+  aiButton.classList.remove('hidden');
 }
+
+aiButton.addEventListener('click', () => {
+  aiModal.style.display='block';
+  presetQueries.value=''; aiQueryInput.value=''; aiResponseDiv.textContent='';
+});
+
+closeAIModal.addEventListener('click',e=>{  // ← fixed listener
+  e.preventDefault(); aiModal.style.display='none';
+});
+
+window.addEventListener('click',e=>{
+  if(e.target===aiModal) aiModal.style.display='none';
+});
+
+presetQueries.addEventListener('change',()=>{
+  aiQueryInput.value=presetQueries.value;
+});
+
+sendAIQuery.addEventListener('click',async()=>{
+  const q=aiQueryInput.value.trim();
+  if(!q)return;
+  aiResponseDiv.textContent='Loading…';
+  try{
+    const res=await fetch('/api/ai/insights',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        season:`${lastYear} round ${lastRound}`,
+        type:lastSessionType,
+        query:q,
+        data:lastResultsData
+      })
+    });
+    aiResponseDiv.textContent=(await res.json()).response;
+  }catch(err){
+    console.error(err);
+    aiResponseDiv.textContent='Error fetching AI insights.';
+  }
+});

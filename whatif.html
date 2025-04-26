@@ -18,8 +18,8 @@
   <div class="analysis-wrapper">
 
     <div id="analysis-controls">
-      <h2>Create & Configure Your Scenario</h2>
-      
+      <h2>Create &amp; Configure Your Scenario</h2>
+
       <label for="seasonSelect">Choose a season:</label>
       <select id="seasonSelect"></select>
       <button class="analysis-button" id="btnCreateScenario">Create Scenario</button>
@@ -29,9 +29,9 @@
         Choose a points system:
       </label>
       <select id="pointsSystemSelect">
-        <option value="current">Current (25,18,15...)</option>
-        <option value="pre2003">Pre-2003 (10,6,4...)</option>
-        <option value="classic">Classic Top 8 (9,6,4...)</option>
+        <option value="current">Current (25,18,15…)</option>
+        <option value="pre2003">Pre-2003 (10,6,4…)</option>
+        <option value="classic">Classic Top 8 (9,6,4…)</option>
       </select>
     </div>
 
@@ -44,7 +44,10 @@
       <button class="analysis-button" id="btnGetDriverStandings">Show Scenario Driver Standings</button>
       <button class="analysis-button" id="btnGetConstructorStandings">Show Scenario Constructor Standings</button>
     </div>
+
     <div id="standingsDisplay" class="analysis-card"></div>
+
+    <button id="ai-button" class="analysis-button" style="display:none;">AI Insights</button>
 
     <div class="analysis-card">
       <button class="analysis-button" id="btnSaveLocal">Save Scenario Locally (Download JSON)</button>
@@ -56,6 +59,32 @@
   <footer>
     <p>&copy; 2025 My F1 Data Project</p>
   </footer>
+
+  <div id="ai-modal" class="modal">
+    <div class="modal-content">
+      <a href="#" class="close-modal" id="close-ai-modal">&times;</a>
+      <h3>AI Insights</h3>
+
+      <label for="preset-queries">Quick Questions:</label>
+      <select id="preset-queries">
+        <option value="">— Select a question —</option>
+        <option value="Tell me why these scenario standings look like this.">
+          Tell me why these scenario standings look like this
+        </option>
+        <option value="Which driver or team exceeded expectations based on this scenario?">
+          Which driver or team exceeded expectations based on this scenario?
+        </option>
+        <option value="How might these altered results affect the championship narrative?">
+          How might these altered results affect the championship narrative?
+        </option>
+      </select>
+
+      <textarea id="ai-query" rows="4" placeholder="Or ask your own question…" style="width:100%;"></textarea>
+      <button id="send-ai-query" class="analysis-button">Send</button>
+
+      <div id="ai-response" style="margin-top:15px; text-align:left; white-space:pre-wrap;"></div>
+    </div>
+  </div>
 
   <script src="whatif.js"></script>
 </body>

@@ -4,6 +4,17 @@ const raceEditor = document.getElementById('raceEditor');
 const scenarioStatus = document.getElementById('scenarioStatus');
 const pointsSystemSelect = document.getElementById('pointsSystemSelect');
 
+const aiButton = document.getElementById('ai-button');
+const aiModal = document.getElementById('ai-modal');
+const closeAIModal = document.getElementById('close-ai-modal');
+const presetSelect = document.getElementById('preset-queries');
+const aiQueryInput = document.getElementById('ai-query');
+const sendAIQuery = document.getElementById('send-ai-query');
+const aiResponseDiv = document.getElementById('ai-response');
+
+let lastStandingsType = null;   
+let lastStandingsData = null;  
+
 let currentScenarioId = null;
 let currentSeason = null;
 
@@ -256,19 +267,22 @@ document.getElementById('btnGetDriverStandings')
       .then(r => r.json())
       .then(data => {
         const arr = data.driverStandings;
-        let html = `<h4>Scenario #${data.scenarioId} - Driver Standings</h4><ol>`;
+        let html = `<h4>Scenario #${data.scenarioId} – Driver Standings</h4><ol>`;
         arr.forEach(item => {
-          html += `<li>${item.driverName} - ${item.points} pts</li>`;
+          html += `<li>${item.driverName} – ${item.points} pts</li>`;
         });
         html += '</ol>';
         document.getElementById('standingsDisplay').innerHTML = html;
+
+        /* NEW: store for AI */
+        lastStandingsType = 'driver';
+        lastStandingsData = arr;
+        aiButton.style.display = 'inline-block';
       })
-      .catch(err => {
-        console.error(err);
-      });
+      .catch(err => console.error(err));
   });
 
-document.getElementById('btnGetConstructorStandings')
+  document.getElementById('btnGetConstructorStandings')
   .addEventListener('click', () => {
     if (!currentScenarioId) {
       alert('No scenario created yet!');
@@ -278,16 +292,19 @@ document.getElementById('btnGetConstructorStandings')
       .then(r => r.json())
       .then(data => {
         const arr = data.constructorStandings;
-        let html = `<h4>Scenario #${data.scenarioId} - Constructor Standings</h4><ol>`;
+        let html = `<h4>Scenario #${data.scenarioId} – Constructor Standings</h4><ol>`;
         arr.forEach(item => {
-          html += `<li>${item.constructorName} - ${item.points} pts</li>`;
+          html += `<li>${item.constructorName} – ${item.points} pts</li>`;
         });
         html += '</ol>';
         document.getElementById('standingsDisplay').innerHTML = html;
+
+        /* NEW: store for AI */
+        lastStandingsType = 'constructor';
+        lastStandingsData = arr;
+        aiButton.style.display = 'inline-block';
       })
-      .catch(err => {
-        console.error(err);
-      });
+      .catch(err => console.error(err));
   });
 
 document.getElementById('btnSaveLocal').addEventListener('click', () => {
@@ -336,4 +353,63 @@ document.getElementById('btnLoadLocal').addEventListener('click', () => {
     reader.readAsText(file);
   });
   input.click();
+});
+
+aiButton.addEventListener('click', () => {
+  aiModal.style.display = 'block';
+  aiQueryInput.value = '';
+  aiResponseDiv.textContent = '';
+  presetSelect.value = '';
+});
+
+closeAIModal.addEventListener('click', e => {
+  e.preventDefault();
+  aiModal.style.display = 'none';
+});
+
+window.addEventListener('click', e => {
+  if (e.target === aiModal) aiModal.style.display = 'none';
+});
+
+presetSelect.addEventListener('change', () => {
+  aiQueryInput.value = presetSelect.value;
+});
+
+sendAIQuery.addEventListener('click', async () => {
+  const q = aiQueryInput.value.trim();
+  if (!q) return;
+
+  if (!lastStandingsData) {
+    aiResponseDiv.textContent = 'Please generate driver or constructor standings first.';
+    return;
+  }
+
+  aiResponseDiv.textContent = 'Loading…';
+
+  try {
+    const payload = {
+      season: currentSeason,
+      type:   lastStandingsType,
+      query:  q,
+      data:   { standings: lastStandingsData }
+    };
+
+    const res = await fetch('/api/ai/insights', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    const json = await res.json();
+    aiResponseDiv.textContent = json.response;
+  } catch (e) {
+    console.error(e);
+    aiResponseDiv.textContent = 'Error fetching AI insights.';
+  }
+});
+
+document.getElementById('btnCreateScenario').addEventListener('click', () => {
+  aiButton.style.display = 'none';
+  lastStandingsData = null;
+  lastStandingsType = null;
 });

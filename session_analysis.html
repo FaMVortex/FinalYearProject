@@ -3,7 +3,6 @@
 <head>
   <meta charset="UTF-8" />
   <title>F1 Session Analysis</title>
-  <!-- Link to your CSS file -->
   <link rel="stylesheet" href="session_analysis.css" />
 </head>
 <body>
@@ -16,60 +15,42 @@
     </header>
 
     <div class="main-content">
-      <!-- Left panel: user selections for Year, Round, Session -->
       <div class="left-panel">
         <section class="controls">
           <h2>Select a Session</h2>
 
-          <div class="control-group">
-            <label for="yearSelect">Year:</label>
-            <select id="yearSelect">
-              <option value="">Loading...</option>
-            </select>
-          </div>
+          <label for="yearSelect">Year:</label>
+          <select id="yearSelect"><option>Loading…</option></select>
 
-          <div class="control-group">
-            <label for="roundSelect">Round:</label>
-            <select id="roundSelect" disabled>
-              <option value="">Select a Year First</option>
-            </select>
-          </div>
+          <label for="roundSelect">Round:</label>
+          <select id="roundSelect" disabled><option>Select a Year First</option></select>
 
-          <div class="control-group">
-            <label for="sessionSelect">Session:</label>
-            <select id="sessionSelect">
-              <option value="race" selected>Race</option>
-              <option value="qualifying">Qualifying</option>
-              <option value="sprint">Sprint</option>
-            </select>
-          </div>
+          <label for="sessionSelect">Session:</label>
+          <select id="sessionSelect">
+            <option value="race" selected>Race</option>
+            <option value="qualifying">Qualifying</option>
+            <option value="sprint">Sprint</option>
+          </select>
 
           <button id="fetchSessionDataBtn">Show Session Results</button>
         </section>
 
-        <!-- New: Driver Filter Section (initially hidden) -->
+        <button id="ai-button">AI Insights</button>
+
         <section id="driverFilterSection" class="hidden">
-          <h2>Driver Filter (2–4 drivers)</h2>
-          <label>
-            <input type="checkbox" id="enableDriverFilter" />
-            Enable Driver Filter
-          </label>
+          <h2>Driver Filter (2-4 drivers)</h2>
+          <label><input type="checkbox" id="enableDriverFilter" /> Enable Driver Filter</label>
 
           <div id="filterControls" class="hidden">
             <label for="driverMultiSelect">Select Drivers:</label>
-            <select id="driverMultiSelect" multiple size="6">
-              <!-- Options populated dynamically -->
-            </select>
+            <select id="driverMultiSelect" multiple size="6"></select>
             <button id="applyFilterBtn">Apply Filter</button>
           </div>
         </section>
       </div>
 
-      <!-- Right panel: session results -->
       <div class="right-panel">
-        <div class="result-container" id="resultsContainer">
-          <!-- Results will be injected here by JS -->
-        </div>
+        <div class="result-container" id="resultsContainer"></div>
       </div>
     </div>
 
@@ -78,7 +59,32 @@
     </footer>
   </div>
 
-  <!-- Link your script at the end -->
+  <div id="ai-modal" class="modal">
+    <div class="modal-content">
+      <a href="#" id="close-ai-modal" class="close-modal">&times;</a>
+      <h3>AI Insights</h3>
+
+      <label for="preset-queries">Quick Questions:</label>
+      <select id="preset-queries">
+        <option value="">— Select a question —</option>
+        <option value="Summarise the key storylines from this session.">
+          Summarise the key storylines from this session
+        </option>
+        <option value="Which driver over-performed relative to expectations?">
+          Which driver over-performed relative to expectations?
+        </option>
+        <option value="How might these results affect the championship battle?">
+          How might these results affect the championship battle?
+        </option>
+      </select>
+
+      <textarea id="ai-query" rows="4" placeholder="Or ask your own question…"></textarea>
+      <button id="send-ai-query">Send</button>
+
+      <div id="ai-response"></div>
+    </div>
+  </div>
+
   <script src="session_analysis.js"></script>
 </body>
 </html>

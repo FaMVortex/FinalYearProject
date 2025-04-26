@@ -9,6 +9,16 @@ document.addEventListener("DOMContentLoaded", () => {
   const chartContainer = document.getElementById("chartContainer");
   const comparisonTableHead = document.getElementById("comparisonTableHead");
   const comparisonTableBody = document.getElementById("comparisonTableBody");
+
+  const aiButton = document.getElementById("ai-button");
+  const aiModal = document.getElementById("ai-modal");
+  const closeModal = document.getElementById("close-ai-modal");
+  const presetQueries = document.getElementById("preset-queries");
+  const aiQueryInput = document.getElementById("ai-query");
+  const sendAIQuery = document.getElementById("send-ai-query");
+  const aiResponseDiv = document.getElementById("ai-response");
+
+  let lastAIData = null;   
   let comparisonChart = null;
 
   // Load seasons
@@ -129,6 +139,14 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       });
 
+      lastAIData = {
+        startYear,endYear,
+        metric,
+        years: sortedYears,
+        results: resultsArray
+      };
+      aiButton.style.display = "block";
+
       const viewMode = document.querySelector('input[name="viewMode"]:checked').value;
       if (viewMode === "table") {
         renderTable(resultsArray, sortedYears);
@@ -222,12 +240,53 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Listeners
-  compareBtn.addEventListener("click", compareConstructors);
-  startYearSelect.addEventListener("change", loadConstructorsForRange);
-  endYearSelect.addEventListener("change", loadConstructorsForRange);
-
-  loadSeasons().then(() => {
-    loadConstructorsForRange();
+  aiButton.addEventListener("click",()=>{
+    aiModal.style.display="block";
+    aiResponseDiv.textContent="";
+    aiQueryInput.value="";
+    presetQueries.value="";
   });
+  closeModal.addEventListener("click",e=>{
+    e.preventDefault();aiModal.style.display="none";
+  });
+  window.addEventListener("click",e=>{
+    if(e.target===aiModal) aiModal.style.display="none";
+  });
+  presetQueries.addEventListener("change",()=>{
+    aiQueryInput.value=presetQueries.value;
+  });
+  sendAIQuery.addEventListener("click",async()=>{
+    const q=aiQueryInput.value.trim();
+    if(!q) return;
+    if(!lastAIData){
+      aiResponseDiv.textContent="Generate a comparison first!";
+      return;
+    }
+    aiResponseDiv.textContent="Loading…";
+    try{
+      const payload={
+        season:`${lastAIData.startYear}-${lastAIData.endYear}`,
+        type:"multi-constructor",
+        query:q,
+        data:lastAIData
+      };
+      const res=await fetch("/api/ai/insights",{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify(payload)
+      });
+      const json=await res.json();
+      aiResponseDiv.textContent=json.response;
+    }catch(err){
+      console.error(err);
+      aiResponseDiv.textContent="Error fetching AI insights.";
+    }
+  });
+
+  /* ----- listeners & init ----- */
+  compareBtn.addEventListener("click",compareConstructors);
+  startYearSelect.addEventListener("change",loadConstructorsForRange);
+  endYearSelect  .addEventListener("change",loadConstructorsForRange);
+
+  loadSeasons().then(loadConstructorsForRange);
 });
