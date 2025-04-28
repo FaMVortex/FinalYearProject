@@ -25,7 +25,7 @@
         <label for="endYear">End Year:</label>
         <select id="endYear"></select>
 
-        <label>Drivers (2–4):</label>
+        <label>Drivers (2-4):</label>
         <div id="driverCheckboxes" class="checkbox-container"></div>
 
         <label for="metricSelect">Metric:</label>
@@ -46,8 +46,8 @@
 
         <button id="compareBtn">Compare</button>
 
-        <!-- AI button now lives here -->
-        <button id="ai-button">AI Insights</button>
+        <!-- AI button -->
+        <button id="aiButton">AI Insights</button>
       </section>
 
       <section class="right-panel">
@@ -71,14 +71,14 @@
     </footer>
   </div>
 
-  <!-- ── AI INSIGHTS MODAL (unchanged markup) ── -->
+  <!-- ── AI INSIGHTS MODAL ── -->
   <div id="ai-modal" class="modal">
     <div class="modal-content">
       <a href="#" id="close-ai-modal" class="close-modal">&times;</a>
       <h3>AI Insights</h3>
 
-      <label for="preset-queries">Quick Questions:</label>
-      <select id="preset-queries">
+      <label for="presetQueries">Quick Questions:</label>
+      <select id="presetQueries">
         <option value="">— Select a question —</option>
         <option value="What is the main storyline that emerges from these driver trends?">
           What is the main storyline that emerges from these driver trends?
@@ -91,10 +91,10 @@
         </option>
       </select>
 
-      <textarea id="ai-query" rows="4" placeholder="Or ask your own question…"></textarea>
-      <button id="send-ai-query">Send</button>
+      <textarea id="aiQuery" rows="4" placeholder="Or ask your own question…"></textarea>
+      <button id="sendAI">Send</button>
 
-      <div id="ai-response"></div>
+      <div id="aiAnswer"></div>
     </div>
   </div>
 

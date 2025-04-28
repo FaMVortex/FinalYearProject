@@ -38,12 +38,14 @@
         <button id="ai-button">AI Insights</button>
 
         <section id="driverFilterSection" class="hidden">
-          <h2>Driver Filter (2-4 drivers)</h2>
+          <h2>Driver Filter (2–4 drivers)</h2>
           <label><input type="checkbox" id="enableDriverFilter" /> Enable Driver Filter</label>
 
           <div id="filterControls" class="hidden">
-            <label for="driverMultiSelect">Select Drivers:</label>
-            <select id="driverMultiSelect" multiple size="6"></select>
+            <label>Select Drivers:</label>
+            <!-- new checkbox container -->
+            <div id="driverMultiCheckboxes" class="driver-checkboxes"></div>
+
             <button id="applyFilterBtn">Apply Filter</button>
           </div>
         </section>

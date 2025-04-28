@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Quali vs Race Pace | F1 Data Viz</title>
+  <link rel="stylesheet" href="multi_year_comparison.css"><!-- re-use site theme -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="wrapper">
+    <header>
+      <h1>Quali vs Race Pace Scatter</h1>
+      <nav class="nav-links">
+        <a href="index.html">Home</a>
+        <a href="quali_vs_race_pace.html">Quali vs Race Pace</a>
+      </nav>
+    </header>
+
+    <main class="main-content">
+      <!-- Left controls -->
+      <section class="left-panel">
+        <h2>Select Season</h2>
+        <label for="seasonSelect">Season:</label>
+        <select id="seasonSelect"><option>Loading…</option></select>
+        <button id="generateBtn">Generate Scatter</button>
+
+        <!-- AI button (hidden until chart exists) -->
+        <button id="aiButton" style="display:none;">AI Insights</button>
+      </section>
+
+      <!-- Right panel -->
+      <section class="right-panel">
+        <div id="chartContainer" class="chart-container" style="display:none;">
+          <h2>Avg Grid vs Avg Finish</h2>
+          <canvas id="scatterCanvas"></canvas>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <p>&copy; 2025 F1 Data Visualization. All rights reserved.</p>
+    </footer>
+  </div>
+
+  <!-- AI modal (matches styling used elsewhere) -->
+  <div id="aiModal" class="modal">
+    <div class="modal-content">
+      <a href="#" id="closeModal" class="close-modal">&times;</a>
+      <h3>AI Insights</h3>
+      <label for="presetQueries">Quick questions:</label>
+      <select id="presetQueries">
+        <option value="">— Select —</option>
+        <option value="Who out-performed on Sunday relative to Saturday?">
+          Who out-performed on Sunday relative to Saturday?
+        </option>
+        <option value="What patterns stand out in this scatter?">
+          What patterns stand out in this scatter?
+        </option>
+      </select>
+      <textarea id="aiQuery" rows="4" placeholder="Or ask your own question…"></textarea>
+      <button id="sendAI">Send</button>
+      <div id="aiAnswer" style="margin-top:15px;white-space:pre-wrap;"></div>
+    </div>
+  </div>
+
+  <script src="quali_vs_race_pace.js"></script>
+</body>
+</html>

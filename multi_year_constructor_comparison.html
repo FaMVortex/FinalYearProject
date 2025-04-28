@@ -46,8 +46,8 @@
 
         <button id="compareBtn">Compare</button>
 
-        <!-- AI button now lives here -->
-        <button id="ai-button">AI Insights</button>
+        <!-- AI button (matches CSS id) -->
+        <button id="aiButton">AI Insights</button>
       </section>
 
       <!-- ── RIGHT PANEL ──────────────────────── -->
@@ -72,14 +72,14 @@
     </footer>
   </div>
 
-  <!-- ── AI INSIGHTS MODAL (unchanged markup) ── -->
+  <!-- ── AI INSIGHTS MODAL ── -->
   <div id="ai-modal" class="modal">
     <div class="modal-content">
       <a href="#" id="close-ai-modal" class="close-modal">&times;</a>
       <h3>AI Insights</h3>
 
-      <label for="preset-queries">Quick Questions:</label>
-      <select id="preset-queries">
+      <label for="presetQueries">Quick Questions:</label>
+      <select id="presetQueries">
         <option value="">— Select a question —</option>
         <option value="Which team benefited most from rule changes during these years?">
           Which team benefited most from rule changes during these years?
@@ -92,10 +92,10 @@
         </option>
       </select>
 
-      <textarea id="ai-query" rows="4" placeholder="Or ask your own question…"></textarea>
-      <button id="send-ai-query">Send</button>
+      <textarea id="aiQuery" rows="4" placeholder="Or ask your own question…"></textarea>
+      <button id="sendAI">Send</button>
 
-      <div id="ai-response"></div>
+      <div id="aiAnswer"></div>
     </div>
   </div>
 
