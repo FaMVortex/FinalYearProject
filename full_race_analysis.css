@@ -40,7 +40,6 @@ body {
   background: #ff7849;
 }
 
-/* Page wrapper */
 .analysis-wrapper {
   width: 90%;
   max-width: 1200px;
@@ -49,7 +48,6 @@ body {
   flex: 1;
 }
 
-/* Form / Controls up top */
 #analysis-controls {
   background: rgba(255, 255, 255, 0.1);
   padding: 15px;
@@ -92,7 +90,6 @@ label {
   background: #ffd633;
 }
 
-/* Analysis sections */
 #analysisResults,
 #lapTimesChartSection,
 #pitStopSection {
@@ -111,7 +108,6 @@ label {
   margin-bottom: 10px;
 }
 
-/* analysis-card for table or data blocks */
 .analysis-card {
   background: rgba(255,255,255,0.1);
   padding: 15px;
@@ -122,7 +118,6 @@ label {
   overflow-x: auto;
 }
 
-/* Chart container styling */
 .chart-container {
   width: 100%;
   max-width: 900px;
@@ -139,23 +134,56 @@ label {
   max-height: 500px;
 }
 
-/* Driver toggles */
-.toggles-container {
-  margin: 15px auto;
-  text-align: left;
-  max-width: 400px;
+.toggles-container{
+  display:flex;          
+  flex-wrap:wrap;        
+  gap:8px 12px;          
+  max-width:800px;       
+  margin:15px auto;      
+  text-align:left;
 }
-.toggles-container input[type="checkbox"] {
-  margin-right: 6px;
-  transform: scale(1.2);
-  vertical-align: middle;
+.toggle-item{            
+  display:flex;
+  align-items:center;
 }
+
+.toggles-container input[type="checkbox"]{
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.toggles-container input[type="checkbox"] + label{
+  display: inline-block;
+  padding: 6px 14px;
+  margin: 4px 0;
+  font-size: .85rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 2px solid #ffcc00;
+  border-radius: 9999px;          
+  background: rgba(255,255,255,.15);
+  color: #ffcc00;
+  transition: background .25s ease, color .25s ease,
+              transform .15s ease;
+}
+
+.toggles-container input[type="checkbox"] + label:hover{
+  background: rgba(255,255,255,.25);
+  transform: translateY(-1px);
+}
+
+.toggles-container input[type="checkbox"]:checked + label{
+  background: #ffcc00;           
+  color: #000;
+  box-shadow: 0 2px 6px rgba(0,0,0,.35);
+}
+
 .toggles-container label {
   margin-right: 10px;
   vertical-align: middle;
 }
 
-/* Tables within .analysis-card */
 .analysis-card table {
   width: 100%;
   border-collapse: collapse;
@@ -182,7 +210,6 @@ label {
   background: rgba(255,255,255,0.2);
 }
 
-/* Footer */
 footer {
   background: #222;
   color: #ccc;
@@ -192,7 +219,6 @@ footer {
   margin-top: auto;
 }
 
-/* Responsive */
 @media (max-width: 768px) {
   #analysis-controls,
   .analysis-card,
@@ -214,7 +240,7 @@ footer {
     padding: 8px 15px;
   }
   #lapTimesChart {
-    height: 300px; /* reduce chart height for smaller screens */
+    height: 300px; 
   }
 }
 
@@ -227,10 +253,9 @@ footer {
   width: 100%;
   height: 100%;
   overflow: auto;
-  background-color: rgba(0,0,0,0.7);  /* darker backdrop */
+  background-color: rgba(0,0,0,0.7);  
 }
 
-/* Match site panels */
 .modal-content {
   background: rgba(255, 255, 255, 0.2);
   color: white;
@@ -244,7 +269,6 @@ footer {
   text-align: left;
 }
 
-/* Close “×” */
 .close-modal {
   color: white;
   float: right;
@@ -258,7 +282,6 @@ footer {
   cursor: pointer;
 }
 
-/* AI button in page header */
 #ai-button {
   background: #ff5733;
   color: white;
@@ -274,7 +297,6 @@ footer {
   background: #ff7849;
 }
 
-/* “Send” button inside modal */
 #send-ai-query {
   background: #ff5733;
   color: white;
@@ -290,7 +312,6 @@ footer {
   background: #ff7849;
 }
 
-/* Quick‑questions dropdown & textarea styling */
 #preset-queries,
 #ai-query {
   width: 100%;
@@ -308,4 +329,58 @@ footer {
 #preset-queries:focus,
 #ai-query:focus {
   border-color: #ff7849;
+}
+
+summary::-webkit-details-marker {          
+  display: none;
+}
+
+#driverToggleBox {
+  margin: 0 auto 1rem;
+  max-width: 900px;
+  text-align: left;
+}
+
+.toggle-summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 12px 18px;
+  margin: 0;                               
+  border: 2px solid #ffcc00;
+  border-radius: 8px;
+  background: linear-gradient(180deg,#ffd633 0%,#ffcc00 100%);
+  font-weight: 600;
+  font-size: 1rem;
+  color: #000;
+  cursor: pointer;
+  user-select: none;
+  box-shadow: 0 3px 6px rgba(0,0,0,.25);
+  transition: background .25s ease, box-shadow .25s ease;
+}
+
+.toggle-summary:hover,
+.toggle-summary:focus {
+  background: linear-gradient(180deg,#ffe066 0%,#ffd633 100%);
+  box-shadow: 0 4px 8px rgba(0,0,0,.35);
+  outline: none;                           
+}
+
+.toggle-summary:focus-visible {
+  outline: 3px solid #fff;                
+  outline-offset: 2px;
+}
+
+.toggle-summary::after {
+  content: "";
+  width: 0;
+  height: 0;
+  border: 7px solid transparent;
+  border-left-color: #000;                
+  transition: transform .25s ease;
+}
+
+#driverToggleBox[open] .toggle-summary::after {
+  transform: rotate(90deg);                /* ► → ▼ */
 }

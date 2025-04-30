@@ -37,8 +37,14 @@
 
     <section id="lapTimesChartSection">
       <h2>Lap Times Chart</h2>
-      <p class="subtitle">Toggle drivers on/off (Top 3 shown by default):</p>
-      <div id="driverToggles" class="toggles-container">Loading lap times...</div>
+
+      <details id="driverToggleBox">
+      <summary class="toggle-summary">
+        Show / hide driver list ▼
+      </summary>
+
+      <div id="driverToggles" class="toggles-container">Loading lap times…</div>
+      </details>
       <div class="chart-container">
         <canvas id="lapTimesChart"></canvas>
       </div>

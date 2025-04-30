@@ -231,7 +231,10 @@ async function loadLapTimes(year, round) {
       label.htmlFor = chk.id;
       label.textContent = ds.label;
 
-      driverTogglesDiv.append(chk, label, document.createElement("br"));
+      const wrap = document.createElement("div");
+      wrap.className = "toggle-item";
+      wrap.append(chk, label);
+      driverTogglesDiv.appendChild(wrap);
     });
 
     const ctx = lapTimeChartCanvas.getContext("2d");
