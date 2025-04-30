@@ -1,9 +1,26 @@
 const yearSelect = document.getElementById('year-select');
 const raceSelect = document.getElementById('race-select');
 const visualization = document.getElementById('visualization');
-
 const fullAnalysisLink = document.getElementById('fullAnalysisLink');
 
+/**
+ * Build the correct URL for the “Full Race Analysis” link.
+ * If both season AND round are chosen we append them as query params.
+ * Otherwise we fall back to the bare analysis page so the link is still usable.
+ */
+function updateAnalysisLink() {
+  const season = yearSelect.value;
+  const round  = raceSelect.value;
+
+  fullAnalysisLink.href = (season && round)
+    ? `full_race_analysis.html?season=${season}&round=${round}`
+    : 'full_race_analysis.html';
+}
+
+// Initialise the link once on page load
+updateAnalysisLink();
+
+// Fetch list of races for a given year
 async function fetchRaces(year) {
   const API_URL = `/api/f1/${year}.json`;
   try {
@@ -44,7 +61,7 @@ async function fetchRaceResults(year, round) {
   try {
     const response = await fetch(raceResultsURL);
     const data = await response.json();
-    console.log("DEBUG: API Response:", data); 
+    console.log("DEBUG: API Response:", data);
     const raceResults = data.MRData.RaceTable.Races[0];
     displayRaceResults(raceResults);
   } catch (error) {
@@ -55,7 +72,7 @@ async function fetchRaceResults(year, round) {
 
 // Function to display race results
 function displayRaceResults(race) {
-  const results = race?.Results || []; 
+  const results = race?.Results || [];
   if (results.length === 0) {
     visualization.innerHTML = `<h2>No race results found for this round.</h2>`;
     return;
@@ -113,23 +130,23 @@ function populateYearDropdown() {
 }
 
 // Event Listeners
-yearSelect.addEventListener('change', (event) => {
+yearSelect.addEventListener('change', async (event) => {
   const selectedYear = event.target.value;
   visualization.innerHTML = `<h2>Loading...</h2>`;
-  fetchRaces(selectedYear);
+  await fetchRaces(selectedYear);
+  raceSelect.value = "";          
+  updateAnalysisLink();           
 });
 
-raceSelect.addEventListener('change', (event) => {
+raceSelect.addEventListener('change', async (event) => {
   const selectedRound = event.target.value;
   const selectedYear = yearSelect.value;
 
   if (selectedRound) {
-    // Update link for Full Race Analysis
-    fullAnalysisLink.href = `full_race_analysis.html?season=${selectedYear}&round=${selectedRound}`;
-
     visualization.innerHTML = `<h2>Loading...</h2>`;
-    fetchRaceResults(selectedYear, selectedRound);
+    await fetchRaceResults(selectedYear, selectedRound);
   }
+  updateAnalysisLink();
 });
 
 // Initialize the page
