@@ -1,68 +1,73 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Driver Comparison | F1 Data Viz</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom"></script>
-    <link rel="stylesheet" href="style2.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Driver Comparison&nbsp;|&nbsp;F1 Data Viz</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom"></script>
+
+  <link rel="stylesheet" href="style2.css" />
+  <link rel="stylesheet" href="multi_year_comparison.css" />
 </head>
 <body>
-    <div class="wrapper">
-        <header>
-            <h1>F1 Data Visualisation Project</h1>
-            <nav class="nav-links">
-                <a href="index.html">Home</a>
-                <a href="compare_drivers.html">Compare Drivers</a>
-            </nav>
-        </header>
+  <div class="wrapper">
+    <header>
+      <h1>F1 Data Visualisation Project</h1>
+      <nav class="nav-links">
+        <a href="index.html">Home</a>
+        <a href="compare_drivers.html">Compare Drivers</a>
+      </nav>
+    </header>
 
-        <main>
-            <section class="selection-container">
-                <h2>Select a Season</h2>
-                <label for="season">Season:</label>
-                <select id="season"></select>
-            </section>
+    <main class="main-content">
+      <section class="left-panel">
+        <h2>Select a Season</h2>
+        <label for="season">Season:</label>
+        <select id="season"></select>
 
-            <section class="guide-container">
-                <h2>How to Use This Page</h2>
-                <p>Select a season from the dropdown to load driver performance data.</p>
-                <ul>
-                    <li><strong>Zoom:</strong> Use the mouse wheel or pinch to zoom in/out.</li>
-                    <li><strong>Pan:</strong> Click and drag left or right to move across the chart.</li>
-                    <li><strong>Toggle Drivers:</strong> Click on a driver name in the legend to show/hide their data.</li>
-                    <li><strong>Click a Round:</strong> Click on a data point in the chart to see full race results.</li>
-                </ul>
-            </section>
+        <div class="guide-container">
+          <h2>How to Use</h2>
+          <ul>
+            <li><strong>Zoom:</strong> mouse-wheel or pinch</li>
+            <li><strong>Pan:</strong> drag horizontally</li>
+            <li><strong>Toggle drivers:</strong> click names in the legend</li>
+            <li><strong>Click a round:</strong> show full race results</li>
+          </ul>
+        </div>
 
-            <p id="loadingMessage">Loading chart data...</p>
+        <section class="h2h-link-section">
+            <p>Want a round-by-round analysis?</p>
+            <a href="head_to_head.html" class="h2h-button">Launch Head-to-Head</a>
+          </section>
+      </section>
 
-            <section class="chart-container">
-                <canvas id="driverComparisonChart"></canvas>
-            </section>
+      <section class="right-panel">
+        <p id="loadingMessage">Loading chart data…</p>
 
-            <div id="raceResultPopup" class="popup">
-                <div class="popup-content">
-                    <span class="close-popup">&times;</span>
-                    <h2>Race Results</h2>
-                    <p id="round-info"></p>
-                    <p id="driver-info"></p>
-                    <p id="points-info"></p>
-                </div>
-            </div>
-
-            <section class="h2h-link-section">
-                <p>Want to compare two drivers round-by-round?</p>
-                <a href="head_to_head.html" class="h2h-button">Launch Head-to-Head Analysis</a>
-            </section>
-        </main>
-    </div>
+        <div class="chart-container">
+          <canvas id="driverComparisonChart"></canvas> 
+        </div>
+      </section>
+      </section>
+    </main>
 
     <footer>
-        <p>&copy; 2025 F1 Data Visualization. All rights reserved.</p>
+      <p>&copy; 2025 F1 Data Visualization. All rights reserved.</p>
     </footer>
+  </div>
 
-    <script src="compare_drivers.js"></script>
+  <div id="raceResultPopup" class="popup">
+    <div class="popup-content">
+      <span class="close-popup">&times;</span>
+      <h2>Race Results</h2>
+      <p id="round-info"></p>
+      <p id="driver-info"></p>
+      <p id="points-info"></p>
+    </div>
+  </div>
+
+  <script src="compare_drivers.js"></script>
 </body>
 </html>

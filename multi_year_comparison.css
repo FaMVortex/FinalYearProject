@@ -10,6 +10,8 @@ html, body {
     color: white;
     display: flex;
     flex-direction: column;
+    max-width: 100%;
+    overflow-x: hidden;
 }
 
 /* Wrapper to center content, push footer to bottom */
@@ -101,6 +103,7 @@ footer {
 
 /* Right panel (results) */
 .right-panel {
+    min-width: 0;
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -162,7 +165,8 @@ footer {
 }
 .chart-container canvas {
     display: block;
-    width: 100%;
+    max-width: 100% !important;
+    width: 100% !important;
     height: 100%;
 }
 
@@ -194,6 +198,22 @@ footer {
     cursor: pointer;
     margin-top: 10px;
 }
+.left-panel .h2h-button {
+    text-decoration: none;
+    color: white;
+    background: #ff5733;          
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 1rem;
+    display: inline-block;        
+    transition: background 0.3s ease;
+    margin-top: 15px;             
+}
+
+.left-panel .h2h-button:hover {
+    background: #ff7849;          
+}
+
 .left-panel button:hover { background: #ff7849; }
 
 /* Checkbox list */
@@ -361,3 +381,8 @@ footer {
     }
     #aiAnswer { font-size: 0.9rem; }
 }
+
+.h2h-link-section {
+    margin-bottom: 1rem;          /* space above the graph */
+    text-align: center;
+  }

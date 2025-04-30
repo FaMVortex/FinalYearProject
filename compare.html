@@ -1,58 +1,64 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Team Comparison | F1 Data Viz</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom"></script>
-    <link rel="stylesheet" href="style2.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Team Comparison&nbsp;|&nbsp;F1 Data Viz</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom"></script>
+
+  <link rel="stylesheet" href="style2.css" />
+  <link rel="stylesheet" href="multi_year_comparison.css" />
 </head>
+
 <body>
-    <div class="wrapper">
-        <header>
-            <h1>Compare F1 Teams' Points</h1>
-            <nav class="nav-links">
-                <a href="index.html">Home</a>
-                <a href="compare.html">Compare Teams</a>
-            </nav>
-        </header>
+  <div class="wrapper">
+    <header>
+      <h1>Compare F1 Teams’ Points</h1>
+      <nav class="nav-links">
+        <a href="index.html">Home</a>
+        <a href="compare.html">Compare Teams</a>
+      </nav>
+    </header>
 
-        <main>
-            <section class="selection-container">
-                <h2>Select a Season</h2>
-                <label for="season">Season:</label>
-                <select id="season"></select>
-            </section>
+    <main class="main-content">
+      <section class="left-panel">
+        <h2>Select a Season</h2>
+        <label for="season">Season:</label>
+        <select id="season"></select>
 
-            <section class="guide-container">
-                <h2>How to Use This Page</h2>
-                <p>Select a season from the dropdown to load team performance data.</p>
-                <ul>
-                    <li><strong>Zoom:</strong> Use the mouse wheel or pinch to zoom in/out.</li>
-                    <li><strong>Pan:</strong> Click and drag left or right to move across the chart.</li>
-                    <li><strong>Toggle Teams:</strong> Click on a team name in the legend to show/hide its data.</li>
-                    <li><strong>Reset View:</strong> Refresh the page to reset zoom and pan.</li>
-                </ul>
-            </section>
+        <div class="guide-container">
+          <h2>How to Use</h2>
+          <ul>
+            <li><strong>Zoom:</strong> mouse-wheel or pinch</li>
+            <li><strong>Pan:</strong> drag horizontally</li>
+            <li><strong>Toggle teams:</strong> click names in the legend</li>
+            <li><strong>Reset:</strong> refresh the page</li>
+          </ul>
+        </div>
 
-            <p id="loadingMessage">Loading chart data...</p>
+        <section class="h2h-link-section">
+            <p>Want a round-by-round analysis?</p>
+            <a href="head_to_head_constructors.html" class="h2h-button">Launch Head-to-Head</a>
+          </section>
+      </section>
 
-            <section class="chart-container">
-                <canvas id="teamComparisonChart"></canvas>
-            </section>
-
-            <section class="h2h-link-section">
-                <p>Looking for round-by-round driver matchups?</p>
-                <a href="head_to_head_constructors.html" class="h2h-button">Go to Constructor Head-to-Head Comparison</a>
-            </section>
-        </main>
-    </div>
+      <section class="right-panel">
+        <p id="loadingMessage">Loading chart data…</p>
+      
+        <div class="chart-container">
+          <canvas id="teamComparisonChart"></canvas> 
+        </div>
+      </section>
+      </section>
+    </main>
 
     <footer>
-        <p>&copy; 2025 F1 Data Visualization. All rights reserved.</p>
+      <p>&copy; 2025 F1 Data Visualization. All rights reserved.</p>
     </footer>
+  </div>
 
-    <script src="compare.js"></script>
+  <script src="compare.js"></script>
 </body>
 </html>
