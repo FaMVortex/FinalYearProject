@@ -292,6 +292,10 @@ footer {
     height: 100%;
     background: rgba(0,0,0,0.7);
     backdrop-filter: blur(4px);
+    box-sizing: border-box; 
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
 }
 
 /* Modal window */
@@ -321,24 +325,25 @@ footer {
 .close-modal:hover,
 .close-modal:focus { color: #ffcc00; cursor: pointer; }
 
-/* Dropdown & textarea */
-#presetQueries,
-#aiQuery {
-    width: 100%;
-    padding: 10px;
-    margin: 8px 0 12px;
-    border: 2px solid #ffcc00;
-    border-radius: 6px;
-    background: #ffffff;
-    color: #000;
-    font-size: 1rem;
-    outline: none;
-    transition: border 0.2s ease;
+#preset-queries,
+#ai-query {
+  padding: 10px;
+  margin-top: 8px;
+  margin-bottom: 12px;
+  border: 2px solid #ffcc00;
+  border-radius: 5px;
+  background: #fff;
+  color: black;
+  font-size: 1rem;
+  outline: none;
+  transition: border 0.2s ease;
+  box-sizing: border-box; 
+  width: 100%;
+  max-width: 100%; 
 }
 #presetQueries:focus,
 #aiQuery:focus { border-color: #ff7849; }
 
-/* Send button */
 #sendAI {
     background: #ff5733;
     color: #ffffff;

@@ -1,15 +1,13 @@
 document.addEventListener("DOMContentLoaded", () => {
-  /* ────────────────────────────────────────────────────────────
-     0.  GLOBAL CHART DEFAULTS → WHITE TEXT
-  ────────────────────────────────────────────────────────────── */
-  Chart.defaults.color = "#ffffff";   // <─ NEW LINE
+  Chart.defaults.color = "#ffecb3";
+  Chart.defaults.elements.point.borderColor = "#000000";
+  Chart.defaults.elements.point.borderWidth = 1.25;
 
   const seasonSel   = document.getElementById("seasonSelect");
   const genBtn      = document.getElementById("generateBtn");
   const chartDiv    = document.getElementById("chartContainer");
   const aiBtn       = document.getElementById("aiButton");
 
-  /* ---------- AI elements ---------- */
   const modal       = document.getElementById("aiModal");
   const closeModal  = document.getElementById("closeModal");
   const presetDD    = document.getElementById("presetQueries");
@@ -21,7 +19,6 @@ document.addEventListener("DOMContentLoaded", () => {
   let lastSeason    = null;
   let lastData      = null;
 
-  /* -------- Load seasons ---------- */
   fetch("/api/f1/seasons.json")
     .then(r => r.json())
     .then(json => {
@@ -36,7 +33,6 @@ document.addEventListener("DOMContentLoaded", () => {
     })
     .catch(err => console.error("Seasons fetch error:", err));
 
-  /* -------- Generate scatter ---------- */
   genBtn.addEventListener("click", async () => {
     const season = seasonSel.value;
     if (!season) { alert("Pick a season first!"); return; }
@@ -59,39 +55,44 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  /* -------- Build Chart.js scatter ---------- */
   function buildScatter(arr){
     const ctx = document.getElementById("scatterCanvas").getContext("2d");
 
     const pts = arr.map(d => ({
       x: d.avgGrid,
       y: d.avgFinish,
-      r: 5,
+      r: 7,                        
       backgroundColor: colour(d)
     }));
 
     scatterChart = new Chart(ctx, {
       type: "bubble",
-      data: { datasets: [{ data: pts, parsing:false, pointStyle:"circle", hoverRadius:7 }] },
+      data: { datasets: [{ data: pts, parsing:false, pointStyle:"circle", hoverRadius:9 }] },
       options:{
         responsive:true,
         maintainAspectRatio:false,
         scales:{
           x:{ title:{ display:true, text:"Avg Grid (lower = better)" },
-              ticks:{ color:"#fff" }, grid:{ color:"rgba(255,255,255,0.3)" } },
+              ticks:{ color:"#ffecb3" },
+              grid:{ color:"rgba(255,255,255,0.45)" } 
+          },
           y:{ title:{ display:true, text:"Avg Finish (lower = better)" },
-              ticks:{ color:"#fff" }, grid:{ color:"rgba(255,255,255,0.3)" } }
+              ticks:{ color:"#ffecb3" },
+              grid:{ color:"rgba(255,255,255,0.45)" }
+          }
         },
         plugins:{
           tooltip:{
-            backgroundColor:"rgba(0,0,0,0.8)",
-            titleColor:"#fff",
-            bodyColor:"#fff",
+            backgroundColor:"rgba(32,32,32,0.9)",
+            titleColor:"#ffecb3",
+            bodyColor:"#ffffff",
+            borderColor:"#ffecb3",
+            borderWidth:1,
             callbacks:{
               label: ctx => {
                 const d   = arr[ctx.dataIndex];
-                const Δ   = (d.avgFinish - d.avgGrid).toFixed(2);
-                return `${d.driverName}: grid ${d.avgGrid.toFixed(2)}, finish ${d.avgFinish.toFixed(2)} (Δ ${Δ})`;
+                const delta   = (d.avgFinish - d.avgGrid).toFixed(2);
+                return `${d.driverName}: grid ${d.avgGrid.toFixed(2)}, finish ${d.avgFinish.toFixed(2)} (Δ ${delta})`;
               }
             }
           },
@@ -103,12 +104,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function colour(d){
     const delta = d.avgFinish - d.avgGrid;
-    if (delta < -1) return "rgba(0,200,0,0.8)";    // Sunday hero
-    if (delta >  1) return "rgba(200,0,0,0.8)";    // Sunday struggler
-    return           "rgba(200,200,200,0.8)";
+    if (delta < -1) return "#00e676";         
+    if (delta >  1) return "#ff4081";         
+    return "rgba(0,176,255,0.85)";            
   }
 
-  /* -------- AI modal logic ---------- */
   aiBtn.addEventListener("click", () => {
     modal.style.display = "block";
     aiAnswer.textContent = "";
